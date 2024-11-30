@@ -1,0 +1,448 @@
+/* General reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;  /* Light mode background */
+    color: black; /* Light mode text color */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+}
+
+/* Header styling */
+header {
+    background-color: green;
+    color: white;
+    padding: 10px 10%;  /* Reduced padding for smaller header */
+    position: relative;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo img {
+    height: 50px;
+    width: auto;
+}
+
+/* Apply styles only to the logo image */
+.logo img {
+    border-radius: 50px;  /* Circular border with 50px radius */
+    border: 2px solid black; /* Black outline */
+}
+
+/* Navbar styling */
+.navbar ul {
+    list-style-type: none;
+    display: flex;
+    gap: 20px;
+    align-items: center; /* Align items vertically in the navbar */
+}
+
+/* Navbar link styling */
+.navbar a {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+}
+
+/* Main section styling (Original) */
+.main-section {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.main-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+}
+
+/* Button container */
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.button {
+    display: inline-block;
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    color: black;
+    background-color: white;
+    border: 2px solid black;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.button:hover {
+    background-color: green;
+    color: white;
+    border: 2px solid green;
+    outline: none;
+}
+
+/* Dark Mode Styles */
+.dark-mode {
+    background-color: #1e1e1e; /* Dark background */
+    color: white; /* Light text for dark mode */
+}
+
+.dark-mode header {
+    background-color: #333; /* Dark header background */
+}
+
+.dark-mode .navbar a {
+    color: white; /* White links in dark mode */
+}
+
+.dark-mode .button {
+    color: white;
+    background-color: #444; /* Darker button background */
+    border: 2px solid #888; /* Lighter border */
+}
+
+.dark-mode .button:hover {
+    background-color: #555; /* Slightly lighter on hover */
+    color: white;
+    border: 2px solid #bbb; /* Lighter border on hover */
+}
+
+.dark-mode .main-section h1 {
+    color: white; /* White text for main section header */
+}
+
+/* Dark Mode Specific Dropdown Menu Styling */
+.dark-mode .dropdown-content {
+    background-color: #333; /* Dark background for dropdown in dark mode */
+    color: white; /* White text in the dropdown */
+}
+
+.dark-mode .dropdown-content a {
+    color: white; /* White links in dark mode */
+}
+
+.dark-mode .dropdown-content a:hover {
+    background-color: #555; /* Darker background for hover */
+}
+
+/* Dropdown Menu Styling */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    background-color: transparent; /* Transparent button */
+    color: white; /* White text for the button */
+    padding: 10px 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.dropbtn:hover {
+    background-color: #2980B9; /* Slight hover effect */
+    border-color: white;
+}
+
+/* Dropdown content - base styling */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    right: 0; /* Align dropdown to the right */
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Hover effect for links inside the dropdown */
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+/* Display the dropdown when hovered */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Dark Mode Toggle Button Styling */
+.dark-mode-btn {
+    background-color: transparent; /* Transparent button */
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.dark-mode-btn img {
+    width: 25px; /* Icon size */
+    height: 25px;
+}
+
+/* Button hover effect */
+.dark-mode-btn:hover {
+    opacity: 0.8;
+}
+
+/* Login Form Container */
+.login-container {
+    width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Label Styling: Align to left */
+.login-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #333;
+    text-align: left; /* Align label to the left of the input */
+}
+
+/* Input fields */
+.login-container input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* Dark Mode Styles for Login Form */
+.dark-mode .login-container {
+    background-color: #333;  /* Dark background for form */
+    color: white;  /* White text */
+    border: 1px solid #444; /* Darker border */
+}
+
+.dark-mode .login-container label {
+    color: white;  /* White text for labels in dark mode */
+}
+
+.dark-mode .login-container input {
+    background-color: #444; /* Dark input background */
+    color: white;  /* White text in input fields */
+    border: 1px solid #666;  /* Darker border for inputs */
+}
+
+/* Layout for the Login Button and Sign Up Text */
+.login-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Sign Up Link */
+.signup-link {
+    font-size: 14px;
+    color: green;
+    text-decoration: none;
+}
+
+.signup-link:hover {
+    text-decoration: underline;
+}
+
+/* Login Button */
+.login-btn {
+    padding: 10px 20px;
+    background-color: green;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    background-color: #333;
+}
+
+/* Dark Mode Styles for Login Button */
+.dark-mode .login-btn {
+    background-color: #555;  /* Darker button */
+    color: white;
+}
+
+.dark-mode .login-btn:hover {
+    background-color: #444;  /* Darker on hover */
+}
+/* Specific Styling for Confirmation Page */
+.confirmation-container {
+    width: 400px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.confirmation-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #333;
+    text-align: left; /* Align label to the left of the input */
+}
+
+.confirmation-container input[type="text"] {
+    width: calc(100% - 100px); /* Account for button width */
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.confirmation-container .submit-btn {
+    padding: 10px 20px;
+    background-color: green;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block;
+    margin-left: 10px; /* Spacing between input and button */
+}
+
+.confirmation-container .submit-btn:hover {
+    background-color: #333;
+    color: white;
+}
+
+/* Resend Code Text */
+.confirmation-container .resend-text {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;
+    text-align: center;
+}
+
+.confirmation-container .resend-text a {
+    color: green;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.confirmation-container .resend-text a:hover {
+    text-decoration: underline;
+}
+
+/* Dark Mode Adjustments for Confirmation Page */
+.dark-mode .confirmation-container {
+    background-color: #333;
+    color: white;
+    border: 1px solid #444;
+}
+
+.dark-mode .confirmation-container input[type="text"] {
+    background-color: #444;
+    color: white;
+    border: 1px solid #666;
+}
+
+.dark-mode .confirmation-container .submit-btn {
+    background-color: #555;
+}
+
+.dark-mode .confirmation-container .submit-btn:hover {
+    background-color: #444;
+}
+
+.dark-mode .confirmation-container .resend-text a {
+    color: #aaa;
+}
+
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+    }
+
+    .login-container {
+        width: 100%;
+    }
+}
+
+/* Specific Styling for Sign Up Button */
+.signup-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px; /* Adjust button size */
+    background-color: green; /* Primary button color */
+    color: white; /* Text color */
+    font-size: 16px; /* Font size for better readability */
+    border: none; /* Remove borders */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition effect */
+}
+
+/* Hover Effect for Sign Up Button */
+.signup-btn:hover {
+    background-color: #333; /* Darker shade on hover */
+    color: white;
+}
+
+
+/* Style for the label */
+
+
+/* Styling for Account Type Dropdown */
+select#account-type {
+    width: 100%; /* Full width */
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: white; /* Light background */
+    color: #333; /* Text color */
+    margin-bottom: 15px; /* Space below the dropdown */
+    transition: border-color 0.3s ease; /* Smooth border transition */
+}
+
+/* Dark Mode Styling for Dropdown */
+.dark-mode select#account-type {
+    background-color: #444; /* Darker background */
+    color: white; /* White text */
+    border: 1px solid #666; /* Darker border */
+}
+
+/* Focused Dropdown Styling */
+select#account-type:focus {
+    border-color: green; /* Green border when focused */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Dark Mode Focused Dropdown Styling */
+.dark-mode select#account-type:focus {
+    border-color: #bbb; /* Lighter green border in dark mode */
+}
