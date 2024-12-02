@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Sign Up</title>
-    <link rel="stylesheet" href="css/global.css"> <!-- Your CSS -->
+    <link rel="stylesheet" href="css/global.css">
 </head>
 <body>
 
@@ -16,6 +16,7 @@
             </a>
             <nav class="navbar">
                 <ul>
+                    <!-- Dark Mode Toggle Button -->
                     <button class="dark-mode-btn" onclick="toggleDarkMode()">
                         <img id="dark-mode-icon" src="img/light-icon.png" alt="Dark Mode" />
                     </button>
@@ -28,16 +29,16 @@
     <section class="main-section">
         <h1>Sign Up</h1>
         <div class="login-container">
-            <form id="signup-form">
+            <form id="signup-form" onsubmit="event.preventDefault(); handleSignupForm();">
                 <label for="name">Name:</label>
                 <input type="text" id="name" name="name" required placeholder="Enter your name" />
-                
+    
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" required placeholder="Enter your email" />
-                
+    
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required placeholder="Enter your password" />
-                
+    
                 <label for="confirm-password">Confirm Password:</label>
                 <input type="password" id="confirm-password" name="confirm-password" required placeholder="Confirm your password" />
             
@@ -49,14 +50,16 @@
                     <option value="erc-chair">ERC Chair</option>
                     <option value="erc-secretary">ERC Secretary</option>
                 </select>
-                
+    
                 <!-- Sign Up Button -->
                 <button type="submit" class="signup-btn">Sign Up</button>
             </form>            
+    
+            <!-- Error/Success Message -->
+            <div id="message" class="message"></div>
         </div>
     </section>
-
-    <!-- Link to External JavaScript File -->
+    
     <script src="js/script.js"></script>
 </body>
 </html>
