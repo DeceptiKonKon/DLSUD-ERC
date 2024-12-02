@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Account Confirmation</title>
+    <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="img/logo.png" alt="Logo">
+            </a>
+            <nav class="navbar">
+                <ul>
+                    <!-- Dark Mode Toggle Button -->
+                    <button class="dark-mode-btn" onclick="toggleDarkMode()">
+                        <img id="dark-mode-icon" src="img/light-icon.png" alt="Dark Mode">
+                    </button>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+<!-- Confirmation Form -->
+<section class="main-section">
+    <h1>Email Confirmation</h1>
+    <div class="confirmation-container">
+        <!-- Code Verification Section (Email is handled automatically) -->
+        <div id="code-section" class="form-group">
+            <label for="code">Enter the confirmation code:</label>
+            <input type="text" id="confirmation-code" placeholder="Enter confirmation code">
+            <!-- Resend Code Link -->
+            <p id="resend-code-link">
+                Didn't receive the code? <a href="javascript:void(0);" onclick="resendCode()">Resend Code</a>
+            </p>
+
+            <button class="resend-btn" onclick="verifyCode()">Verify Code</button>
+        </div>
+
+        <!-- Message Section -->
+        <div id="message" class="message"></div>
+    </div>
+</section>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
