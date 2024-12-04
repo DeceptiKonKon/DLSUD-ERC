@@ -1,0 +1,798 @@
+document.addEventListener('DOMContentLoaded', async function() {
+    // Check if we're on the dashboard.html page
+    if (window.location.pathname.includes('dashboard.html')) {
+        // Check if the account_type in sessionStorage is 'student'
+        const accountType = sessionStorage.getItem('accountType');
+
+        if (accountType === 'student') {
+            // Only call fetchProtocols if the account_type is 'student'
+            try {
+                await fetchProtocols(); // Try to fetch protocols
+            } catch (error) {
+                // Log the error but allow the page to continue running without interruptions
+                console.error('Error occurred while fetching protocols:', error);
+                // Optionally, you can also notify the user without disrupting the UI.
+                alert('An issue occurred while fetching protocols, but the page continues to work.');
+            }
+        } else {
+            console.log('Account type is not student. Protocols will not be fetched.');
+        }
+    }
+});
+document.addEventListener('DOMContentLoaded', async function() {
+    // Check if we're on the viewprotocol.html page
+    if (window.location.pathname.includes('viewprotocol.html')) {
+        // Call fetchProtocolData with await if the page is 'viewprotocol.html'
+        try {
+            await fetchProtocolData(); // Wait for the fetchProtocolData to resolve
+        } catch (error) {
+            console.error('Error occurred while fetching protocol data:', error);
+            // Optionally, you can notify the user about the error
+            alert('An issue occurred while fetching protocol data.');
+        }
+    }
+});
+
+
+
+document.querySelectorAll('.view-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const protoid = this.dataset.protoid; // Get Protoid from data attribute
+        sessionStorage.setItem('Protoid', protoid); // Store Protoid in sessionStorage
+        window.location.href = 'viewprotocol.html'; // Navigate to the viewprotocol.html
+    });
+});
+
+// Function to handle dark mode toggle
+function toggleDarkMode() {
+    const body = document.body;
+    const darkModeIcon = document.getElementById('dark-mode-icon');
+    
+    body.classList.toggle('dark-mode');
+    
+    if (body.classList.contains('dark-mode')) {
+        darkModeIcon.src = 'img/dark-icon.png'; 
+        localStorage.setItem('darkMode', 'enabled');
+    } else {
+        darkModeIcon.src = 'img/light-icon.png'; 
+        localStorage.setItem('darkMode', 'disabled');
+    }
+}
+
+/// Function to view a protocol's details
+function viewProtocol(protocolId) {
+    // Example: Redirect to a detailed protocol page
+    window.location.href = `viewprotocol.html?id=${protocolId}`;
+}
+
+// Function to navigate to the Create Protocol page
+function createNewProtocol() {
+    // Example: Redirect to the "Create Protocol" page
+    window.location.href = 'createprotocol.html';
+}
+
+// Check if dark mode was previously enabled and apply it
+window.onload = () => {
+    const darkModeStatus = localStorage.getItem('darkMode');
+    const darkModeIcon = document.getElementById('dark-mode-icon');
+
+    if (darkModeStatus === 'enabled') {
+        document.body.classList.add('dark-mode');
+        if (darkModeIcon) darkModeIcon.src = 'img/dark-icon.png';
+    } else {
+        document.body.classList.remove('dark-mode');
+        if (darkModeIcon) darkModeIcon.src = 'img/light-icon.png';
+    }
+
+    // Check if we are on the login page
+    if (document.getElementById('login-form')) {
+        handleLoginForm();
+    }
+
+    // Check if we are on the signup page
+    if (document.getElementById('signup-form')) {
+        handleSignupForm();
+    }
+
+    if (window.location.pathname.endsWith('dashboard.html')) {
+        initDashboardPage();
+
+    }
+
+    if (window.location.pathname.includes('accountsettings.html')) {
+        initAccountSettingsPage();
+
+    }
+    const accountType = sessionStorage.getItem('account_type');
+    if (accountType === 'student') {
+        if (window.location.pathname.endsWith('dashboard.html')) {
+            initDashboardPage();
+            fetchProtocols()
+        }
+}
+}
+
+function initDashboardPage() {
+    // Get user information from sessionStorage
+    const userEmail = sessionStorage.getItem('userEmail');
+    const accountType = sessionStorage.getItem('accountType');
+
+    // If userEmail or accountType are not found, redirect to login page
+    if (!userEmail || !accountType) {
+        alert("Please log in first.");
+        window.location.href = "index.html";  // Redirect to login page
+        return;
+    }
+
+    // Display the user's email in the dashboard
+    displayUserEmail(userEmail);
+
+    // Show or hide sections based on the account type
+    showSectionBasedOnAccountType(accountType);
+}
+
+function displayUserEmail(userEmail) {
+    // Ensure that the element exists before trying to modify it
+    const emailElement = document.getElementById('user-email');
+    if (emailElement) {
+        emailElement.textContent = `Logged in as: ${userEmail}`;
+    }
+}
+
+async function handleLoginForm() {
+    document.getElementById('login-form').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const email = document.getElementById('student-email').value;
+        const password = document.getElementById('student-password').value;
+
+        // Basic validation
+        if (!email || !password) {
+            alert('Please fill in all fields.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('email', email);
+        formData.append('password', password);
+        try {
+            const response = await fetch('https://dlsudercproject.pythonanywhere.com/login', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const result = await response.json();
+                if (result.message === "Please confirm your email.") {
+                    sessionStorage.setItem('userEmail', email);
+                    alert(result.message);  // Show the confirmation message
+                    window.location.href = result.redirect;  // Redirect to confirmation page
+                    return;
+                } else {
+                    alert(result.error || 'An error occurred. Please try again.');
+                }
+                return;
+            }
+
+            const result = await response.json();
+            if (result.message === "Login successful!") {
+                sessionStorage.setItem('userEmail', email); // Store the email
+                sessionStorage.setItem('accountType', result.accountType); // Store the account type
+                sessionStorage.setItem('userName', result.userName); // Store the user's name
+            
+                window.location.href = result.redirect;  // Redirect to the dashboard
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error: ' + error.message);  // Show error message
+        }
+    });
+}
+
+
+function handleSignupForm() {
+    document.getElementById('signup-form').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        // Get form input values
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const confirmPassword = document.getElementById('confirm-password').value.trim();
+        const accountType = document.getElementById('account-type').value;
+
+        // Validate input fields
+        if (!name || !email || !password || !confirmPassword || !accountType) {
+            alert('Please fill in all fields.');
+            return;
+        }
+
+        // Check if passwords match
+        if (password !== confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('email', email);
+        formData.append('password', password);
+        formData.append('account-type', accountType);
+
+        try {
+            // Send POST request to signup API
+            const response = await fetch('https://dlsudercproject.pythonanywhere.com/signup', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json(); // Parse the response
+
+            if (response.ok) {
+                // If signup is successful
+                alert('Signup successful!');
+                window.location.href = 'index.html'; // Redirect to login page after successful signup
+            } else {
+                // If there's an error (like existing email or invalid input)
+                alert(result.error || 'Signup failed. Please try again.');
+            }
+        } catch (error) {
+            // Handle network or unexpected errors
+            alert('An error occurred: ' + error.message);
+            console.error('Error:', error);
+        }
+    });
+}
+
+
+
+// Confirmation Page Process (for sending and verifying the confirmation code)
+let sentCode = '';
+let userEmail = ''; // Store the user's email during the confirmation process
+
+// Send the confirmation code to the email
+async function sendCode() {
+    const email = sessionStorage.getItem('userEmail');
+    if (!email) {
+        alert("Please log in first.");
+        window.location.href = "index.html"; // Redirect to login page if email is not found
+        return;
+    }
+
+    userEmail = email; // Store the email for verification
+    try {
+        const response = await fetch('https://dlsudercproject.pythonanywhere.com/send-code', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email }),
+        });
+
+        const data = await response.json();
+        if (data.message === 'Code sent successfully') {
+            sentCode = data.confirmationCode;
+            document.getElementById('code-section').style.display = 'block';
+            document.getElementById('message').innerHTML = `A code has been sent to ${email}. Please check your inbox.`;
+        } else {
+            document.getElementById('message').innerHTML = 'Failed to send code. Please try again later.';
+            document.getElementById('message').style.color = 'red';
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+async function verifyCode() {
+    const email = sessionStorage.getItem('userEmail');
+    const confirmationCode = document.getElementById('confirmation-code').value; // Get user input
+
+    const expectedCode = sessionStorage.getItem('expectedConfirmationCode'); // Get expected code from sessionStorage
+
+    if (confirmationCode !== expectedCode) {
+        alert("Invalid confirmation code.");
+        return;
+    }
+
+    try {
+        const response = await fetch('https://dlsudercproject.pythonanywhere.com/verify-code', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+        });
+
+        const data = await response.json();
+        if (data.message) {
+            alert(data.message); // Show success message
+            window.location.href = "index.html"; // Redirect to the dashboard
+        } else {
+            alert(data.error); // Show error message
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to verify code.');
+    }
+}
+
+
+
+// Resend the confirmation code to the email
+async function resendCode() {
+    const email = sessionStorage.getItem('userEmail');
+    if (!email) {
+        alert("Please log in first.");
+        window.location.href = "index.html"; // Redirect to login if no email found
+        return;
+    }
+
+    try {
+        const response = await fetch('https://dlsudercproject.pythonanywhere.com/send-code', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+        });
+
+        const data = await response.json();
+        if (data.message === 'Code sent successfully') {
+            sessionStorage.setItem('expectedConfirmationCode', data.confirmationCode); // Store the code for comparison
+            alert(`A new code has been sent to ${email}. Please check your inbox.`);
+        } else {
+            alert('Failed to send code. Please try again later.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error sending code. Please try again later.');
+    }
+}
+
+
+// Function to display messages (error or success)
+function showMessage(message, type) {
+    const messageElement = document.getElementById('message');
+    messageElement.textContent = message;
+    messageElement.className = type === 'error' ? 'error-message' : 'success-message';
+}
+
+
+// Function to show the section based on the user account type
+function showSectionBasedOnAccountType(accountType) {
+    const studentSection = document.getElementById('student-section');
+    const ethicsReviewerSection = document.getElementById('ethics-reviewer-section');
+    const ercChairSection = document.getElementById('erc-chair-section');
+    const ercSecretarySection = document.getElementById('erc-secretary-section');
+
+    // Hide all sections initially
+    studentSection.classList.add('hidden');
+    ethicsReviewerSection.classList.add('hidden');
+    ercChairSection.classList.add('hidden');
+    ercSecretarySection.classList.add('hidden');
+
+    // Show the section based on the account type
+    switch (accountType) {
+        case 'student':
+            studentSection.classList.remove('hidden');
+            break;
+        case 'ethics-reviewer':
+            ethicsReviewerSection.classList.remove('hidden');
+            break;
+        case 'erc-chair':
+            ercChairSection.classList.remove('hidden');
+            break;
+        case 'erc-secretary':
+            ercSecretarySection.classList.remove('hidden');
+            break;
+        default:
+            alert('Account type not recognized.');
+            break;
+    }
+}
+
+// Function to handle password change form submission
+async function changePassword(email) {
+    const passwordChangeForm = document.getElementById('password-change-form');
+    const currentPassword = document.getElementById('current-password').value;
+    const newPassword = document.getElementById('new-password').value;
+    const confirmPassword = document.getElementById('confirm-password').value;
+
+    // Validate new password
+    if (newPassword !== confirmPassword) {
+        alert('New password and confirm password do not match.');
+        return;
+    }
+
+    try {
+        // Send POST request to change password
+        const response = await fetch('https://dlsudercproject.pythonanywhere.com/change_password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: email,
+                currentPassword: currentPassword,
+                newPassword: newPassword,
+            }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert('Password updated successfully!');
+        } else {
+            alert(result.error || 'Error updating password.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while updating the password.');
+    }
+}
+
+// Initialization function for the Account Settings page
+function initAccountSettingsPage() {
+    const accountSettingsSection = document.getElementById('account-settings-section');
+    const passwordChangeForm = document.getElementById('password-change-form');
+
+    // Fetch user data from sessionStorage
+    const userEmail = sessionStorage.getItem('userEmail');
+    const userName = sessionStorage.getItem('userName');
+    const accountType = sessionStorage.getItem('accountType');
+
+    // Redirect to login page if user is not logged in
+    if (!userEmail || !accountType) {
+        alert('Please log in first.');
+        window.location.href = 'index.html';
+        return;
+    }
+
+    // Display user information
+    document.getElementById('user-email').textContent = `${userEmail}`;
+    document.getElementById('user-name').textContent = `${userName || 'N/A'}`;
+    document.getElementById('account-type').textContent = `${accountType}`;
+
+    // Handle password change form submission
+    passwordChangeForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        changePassword(userEmail);
+    });
+}
+
+
+
+// Ensure the form fields for protocol and files are handled correctly in this JavaScript
+
+function adjustForm() {
+    const reviewType = document.getElementById('review-type').value;
+    const experimentTypeSection = document.getElementById('experiment-type-section');
+    const inputFields = document.getElementById('input-fields');
+    const uploadSection = document.getElementById('upload-section');
+
+    // Reset fields
+    inputFields.innerHTML = '';
+    uploadSection.innerHTML = '';
+    experimentTypeSection.style.display = 'none';
+
+    // Common input fields
+    const commonInputs = `
+        <label for="proponent1">Proponent 1:</label>
+        <input type="text" id="proponent1" name="proponent1" required>
+
+        <label for="proponent2">Proponent 2:</label>
+        <input type="text" id="proponent2" name="proponent2">
+
+        <label for="proponent3">Proponent 3:</label>
+        <input type="text" id="proponent3" name="proponent3">
+
+        <label for="college">College:</label>
+        <input type="text" id="college" name="college" required>
+
+        <label for="research-title">Research Title:</label>
+        <input type="text" id="research-title" name="research-title" required>
+
+        <label for="acad-year">Academic Year:</label>
+        <input type="text" id="acad-year" name="acad-year" value="24-25 1st SEM" readonly disabled>
+    `;
+
+    // Add common input fields
+    inputFields.innerHTML = commonInputs;
+
+    if (reviewType === 'exempted') {
+    uploadSection.innerHTML = `
+        <label>Assessment Checklist: <input type="file" name="accomplished-checklist" required></label>
+        <label>Research Proposal: <input type="file" name="research-proposal" required></label>
+    `;
+} else if (reviewType === 'expedited' || reviewType === 'fullboard') {
+    experimentTypeSection.style.display = 'block';
+    const experimentType = document.getElementById('experiment-type').value;
+
+    if (experimentType === 'humans') {
+        uploadSection.innerHTML = `
+            <label>Assessment Checklist: <input type="file" name="accomplished-checklist" required></label>
+            <label>Research Proposal: <input type="file" name="research-proposal" required></label>
+            <label>ICF English: <input type="file" name="icf-eng" required></label>
+            <label>ICF Tagalog: <input type="file" name="icf-tag" required></label>
+            <label>Protocol Assessment: <input type="file" name="protocol-assessment" required></label>
+            <label>ICAF: <input type="file" name="icaf" required></label>
+            <label>Official Receipt: <input type="file" name="official-receipt" accept="application/pdf, image/*" required></label>
+            <label>Advertisement Image: <input type="file" name="advertisement-image" accept="image/*" required></label>
+            <label>Link of Sources in Data Mining: <input type="file" name="sources-link" ></label>
+        `;
+    } else if (experimentType === 'plants') {
+        uploadSection.innerHTML = `
+            <label>Assessment Checklist: <input type="file" name="accomplished-checklist" required></label>
+            <label>Research Proposal: <input type="file" name="research-proposal" required></label>
+            <label>BSD Form: <input type="file" name="bsd-form" required></label>
+        `;
+    }
+}
+
+}
+
+// Event Listeners
+document.getElementById('review-type').addEventListener('change', adjustForm);
+document.getElementById('experiment-type').addEventListener('change', adjustForm);
+
+
+function handleProtocolForm() {
+    document.getElementById('protocol-form').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        // Get form input values
+        const researchTitle = document.querySelector('[name="research-title"]').value.trim();
+        const proponent1 = document.querySelector('[name="proponent1"]').value.trim();
+        const proponent2 = document.querySelector('[name="proponent2"]').value.trim();
+        const proponent3 = document.querySelector('[name="proponent3"]').value.trim();
+        const college = document.querySelector('[name="college"]').value.trim();
+        const acadYear = document.querySelector('[name="acad-year"]').value;
+        const reviewType = document.getElementById('review-type').value;
+        const category = document.getElementById('category').value;
+        const experimentType = document.getElementById('experiment-type')?.value || null;
+
+        // Get the email from sessionStorage
+        const userEmail = sessionStorage.getItem('userEmail') || document.querySelector('[name="user-email"]').value.trim();
+
+        // Validate input fields
+        if (!researchTitle || !proponent1 || !college || !acadYear || reviewType === 'none' || !userEmail) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('research-title', researchTitle);
+        formData.append('proponent1', proponent1);
+        formData.append('proponent2', proponent2);
+        formData.append('proponent3', proponent3);
+        formData.append('college', college);
+        formData.append('acad-year', acadYear);
+        formData.append('review-type', reviewType);
+        formData.append('category', category);
+        formData.append('user-email', userEmail);
+        if (experimentType) formData.append('experiment-type', experimentType);
+
+        // Handle file uploads
+        const uploadSection = document.getElementById('upload-section');
+        const fileInputs = uploadSection.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(input => {
+            if (input.files[0]) {
+                formData.append(input.name, input.files[0]);
+            }
+        });
+
+        try {
+            // Send POST request to protocol submission API
+            const response = await fetch('https://dlsudercproject.pythonanywhere.com/submit-protocol', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json(); // Parse the response
+
+            if (response.ok) {
+                // If submission is successful
+                alert('Protocol submitted successfully!');
+                window.location.href = 'dashboard.html'; // Redirect after successful submission
+            } else {
+                // If there's an error (like validation issues)
+                alert(result.error || 'Submission failed. Please try again.');
+            }
+        } catch (error) {
+            // Handle network or unexpected errors
+            alert('An error occurred: ' + error.message);
+            console.error('Error:', error);
+        }
+    });
+}
+
+async function fetchProtocols() {
+    // Retrieve the email from sessionStorage
+    const userEmail = sessionStorage.getItem('userEmail');
+
+    if (!userEmail) {
+        console.error('User email is not available in sessionStorage.');
+        alert('User email is not available. Please log in again.');
+        return;
+    }
+
+    const apiUrl = `https://dlsudercproject.pythonanywhere.com/get-protocols?email=${encodeURIComponent(userEmail)}`;
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.status === 'success') {
+                displayProtocols(data.protocols);
+            } else {
+                console.error(data.message);
+            }
+        } else {
+            console.error('Failed to fetch protocols');
+        }
+    } catch (error) {
+        console.error('Error fetching protocols:', error);
+    }
+}
+
+
+    
+function displayProtocols(protocols) {
+    const tableBody = document.querySelector('#protocols-table tbody');
+    tableBody.innerHTML = '';  // Clear any existing rows
+
+    protocols.forEach(protocol => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${protocol.Protoid}</td>
+            <td>${protocol.ResearchTitle}</td>
+            <td>${protocol.EthicsStatus}</td>
+            <td><button class="view-btn" data-protoid="${protocol.Protoid}">View</button></td>
+        `;
+
+        // Add event listener to the "View" button
+        const viewButton = row.querySelector('.view-btn');
+        viewButton.addEventListener('click', function() {
+            // Store the Protoid in sessionStorage
+            sessionStorage.setItem('protoid', protocol.Protoid);
+            console.log(protocol.Protoid); // Corrected log statement
+            // Redirect to viewprotocol.html
+            window.location.href = 'viewprotocol.html';
+        });
+
+        tableBody.appendChild(row);
+    });
+}
+
+
+
+async function fetchProtocolData() {
+    const protoid = sessionStorage.getItem('protoid');
+    if (!protoid) {
+        console.error('Protoid is not available in sessionStorage.');
+        alert('Protoid not found. Please go back to the dashboard and try again.');
+        return;
+    }
+
+    try {
+        const apiUrl = `https://dlsudercproject.pythonanywhere.com/get-protocol-details?protoid=${protoid}`;
+        const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.status === 'success') {
+                displayProtocolData(data.protocol);
+                // Optionally fetch files if needed after protocol details
+                fetchFiles(protoid);
+            } else {
+                console.error(data.message);
+            }
+        } else {
+            console.error('Failed to fetch protocol details');
+        }
+    } catch (error) {
+        console.error('Error fetching protocol data:', error);
+    }
+}
+
+function displayProtocolData(protocol) {
+    document.getElementById('researchTitle').textContent = protocol.ResearchTitle;
+    document.getElementById('email').textContent = protocol.Email;
+    document.getElementById('college').textContent = protocol.College;
+    document.getElementById('category').textContent = protocol.Category;
+    document.getElementById('reviewType').textContent = protocol.ReviewType;
+    document.getElementById('proponent1').textContent = protocol.Proponent1;
+    document.getElementById('proponent2').textContent = protocol.Proponent2 || 'N/A';
+    document.getElementById('proponent3').textContent = protocol.Proponent3 || 'N/A';
+    document.getElementById('comments').textContent = protocol.Comments || 'No comments provided';
+    document.getElementById('acadYear').textContent = protocol.AcadYear;
+    document.getElementById('ethicsStatus').textContent = protocol.EthicsStatus;
+}
+
+async function fetchFiles(protoid) {
+    try {
+        const apiUrl = `https://dlsudercproject.pythonanywhere.com/get-protocol-files?protoid=${protoid}`;
+        const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.status === 'success') {
+                populateFilesTable(data.files);
+            } else {
+                console.error(data.message);
+            }
+        } else {
+            console.error('Failed to fetch files');
+        }
+    } catch (error) {
+        console.error('Error fetching files:', error);
+    }
+}
+
+function populateFilesTable(files) {
+    const filesList = document.getElementById('files-list');
+    filesList.innerHTML = ''; // Clear the table before populating
+
+    if (files.length === 0) {
+        filesList.innerHTML = '<tr><td colspan="2">No files associated with this protocol.</td></tr>';
+        return;
+    }
+
+    files.forEach(file => {
+        const row = document.createElement('tr');
+
+        // Map file types to user-friendly names
+        const fileTypeMap = {
+            'assessment_checklist': 'Assessment Checklist',
+            'protocol_document': 'Protocol Document',
+            'other': 'Other',
+        };
+        const fileTypeName = fileTypeMap[file.FileType] || file.FileType;
+
+        // File type column
+        const fileTypeCell = document.createElement('td');
+        fileTypeCell.textContent = fileTypeName;
+        row.appendChild(fileTypeCell);
+
+        // Download button column
+        const downloadCell = document.createElement('td');
+        const downloadButton = document.createElement('button');
+        downloadButton.textContent = 'Download';
+        downloadButton.onclick = () => {
+            window.location.href = `https://dlsudercproject.pythonanywhere.com/download-file/${file.FileID}`;
+        };
+        downloadCell.appendChild(downloadButton);
+        row.appendChild(downloadCell);
+
+        filesList.appendChild(row);
+    });
+}
+
+// Attach fetchFiles to the button
+document.getElementById('fetchFilesBtn').addEventListener('click', () => {
+    const protoid = sessionStorage.getItem('protoid');
+    if (protoid) {
+        fetchFiles(protoid);
+    } else {
+        alert('Protoid not found. Please go back to the dashboard and try again.');
+    }
+});
+// Call fetchProtocolFiles when the page is ready
+document.getElementById('fetchFilesBtn').addEventListener('click', fetchProtocolFiles);
+
+
+function downloadProtocolFiles(protoid) {
+    const url = `/download-protocol-files?protoid=${protoid}`;
+    window.location.href = url; // Trigger download
+}
+
+

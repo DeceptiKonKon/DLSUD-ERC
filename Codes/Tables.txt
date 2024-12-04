@@ -1,0 +1,72 @@
+CREATE TABLE users (
+id INT AUTO_INCREMENT PRIMARY KEY,
+name NVARCHAR(255),
+email NVARCHAR(255) UNIQUE,
+password NVARCHAR(255),
+account_type NVARCHAR(255)
+confirmation_status
+) AUTO_INCREMENT = 5510000;
+
+CREATE TABLE AcademicYear (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    AcadYear NVARCHAR(255) NOT NULL,
+    SetStatus Boolean DEFAULT TRUE
+);
+
+CREATE TABLE Protocol (
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+    ResearchTitle VARCHAR(255) DEFAULT NULL,
+    email VARCHAR(255),
+    College VARCHAR(255),
+    ReviewType VARCHAR(255),
+    Proponent1 VARCHAR(255),
+    Proponent2 VARCHAR(255),
+    Proponent3 VARCHAR(255),
+    AccomplishedChecklist LONGBLOB,
+    ICFEng LONGBLOB,
+    ICFTag LONGBLOB,
+    ProtocolAssessment LONGBLOB,
+    BSDForm LONGBLOB,
+    ResearchProposal LONGBLOB,
+    ValidatedQuestionaire LONGBLOB,
+    Advertisement LONGBLOB,
+    LinkforDataMining LONGBLOB,
+    OfficialReceipt LONGBLOB,
+    EthicsStatus VARCHAR(255) DEFAULT 'Creating',
+    Comments VARCHAR(255),
+    AcadYear VARCHAR(255),
+    Reviewer1 VARCHAR(255),
+    FinishedICAF1 LONGBLOB,
+    FinishedProtocol1 LONGBLOB,
+    Paid1 VARCHAR(255),
+    Reviewer1Status VARCHAR(255) DEFAULT 'To-Do',
+    Reviewer2 VARCHAR(255),
+    FinishedICAF2 LONGBLOB,
+    FinishedProtocol2 LONGBLOB,
+    Paid2 VARCHAR(255),
+    Reviewer2Status VARCHAR(255) DEFAULT 'To-Do',
+    Reviewer3 VARCHAR(255),
+    FinishedICAF3 LONGBLOB,
+    FinishedProtocol3 LONGBLOB,
+    Paid3 VARCHAR(255),
+    Reviewer3Status VARCHAR(255) DEFAULT 'To-Do',
+    ERCChair VARCHAR(255),
+    Paid4 VARCHAR(255),
+    layman VARCHAR(255),
+    Paid5 VARCHAR(255),
+    ExperimentType VARCHAR(255) DEFAULT 'none',
+    ICAF LONGBLOB,
+    Category VARCHAR(255),
+    Reviewer3email VARCHAR(255),
+    Reviewer2email VARCHAR(255),
+    Reviewer1email VARCHAR(255)
+) AUTO_INCREMENT = 100000000;
+
+
+
+
+Dashboard System for DLSUD ERC using K-means Clustering, Fernet and AES-CBC Encryption, and Bcrypt Hashing Algorithm
+
+Loysce Roiele V. Fajardo
+Russel Paul M. Ramos
+Jose Gabriel A. Tulao

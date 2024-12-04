@@ -1,0 +1,62 @@
+CREATE TABLE Protocol (
+    Protoid INT AUTO_INCREMENT PRIMARY KEY, 
+    ResearchTitle VARCHAR(255)NOT NULL,
+    Email VARCHAR(255) NOT NULL, 
+    College VARCHAR(255) NOT NULL, 
+    Category VARCHAR(255) NOT NULL, 
+    ReviewType VARCHAR(255) NOT NULL, 
+    Proponent1 VARCHAR(255) NOT NULL, 
+    Proponent2 VARCHAR(255),
+    Proponent3 VARCHAR(255),
+    Comments TEXT,
+    AcadYear VARCHAR(255),
+    ExperimentType VARCHAR(50), 
+    EthicsStatus VARCHAR(255) DEFAULT 'Pending' 
+) AUTO_INCREMENT = 100000000;
+
+CREATE TABLE Files (
+    FileID INT AUTO_INCREMENT PRIMARY KEY,
+    Protoid INT NOT NULL,
+    Filename VARCHAR(255) NOT NULL,
+    FileCategory VARCHAR(255) NOT NULL,
+    FileData LONGBLOB NOT NULL,
+    FOREIGN KEY (Protoid) REFERENCES Protocol(Protoid)
+) AUTO_INCREMENT = 522100000;
+
+
+CREATE TABLE Reviewer (
+    ReviewerID INT AUTO_INCREMENT PRIMARY KEY, 
+    Protoid INT NOT NULL,
+    ReviewerName VARCHAR(255) NOT NULL,
+    ReviewerEmail VARCHAR(255) NOT NULL,
+    PaidAmount VARCHAR(255), 
+    Status VARCHAR(50) DEFAULT 'To-Do',
+    IsPrimaryReviewer BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (Protoid) REFERENCES Protocol(Protoid) ON DELETE CASCADE
+);
+
+CREATE TABLE Reviewerfiles (
+    ReviewerFileID INT AUTO_INCREMENT PRIMARY KEY, 
+    ReviewerID INT NOT NULL,
+    FinishedICAF LONGBLOB,
+    ICAFFileName VARCHAR(255),
+    FinishedProtocol LONGBLOB,
+    ProtocolFileName VARCHAR(255),
+    FOREIGN KEY (ReviewerID) REFERENCES Reviewer(ReviewerID) ON DELETE CASCADE
+);
+
+
+
+
+CREATE TABLE FullBoardReviewerDetails (
+    FullBoardID INT AUTO_INCREMENT PRIMARY KEY,
+    Protoid INT NOT NULL,
+    ERCChairName VARCHAR(255) NOT NULL,
+    ERCChairEmail VARCHAR(255) NOT NULL,
+    ERCChairPaidAmount VARCHAR(255),
+    LaymanName VARCHAR(255) NOT NULL,
+    LaymanEmail VARCHAR(255) NOT NULL,
+    LaymanPaidAmount VARCHAR(255),
+    FOREIGN KEY (Protoid) REFERENCES Protocol(Protoid) ON DELETE CASCADE
+);
+
