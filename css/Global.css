@@ -1,0 +1,1213 @@
+/* General reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;  /* Light mode background */
+    color: black; /* Light mode text color */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+}
+
+/* Header styling */
+header {
+    background-color: rgb(20, 114, 20);
+    color: white;
+    padding: 10px 10%;  /* Reduced padding for smaller header */
+    position: relative;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+    border-bottom: 5px solid black; /* Black border at the bottom */
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo img {
+    height: 50px;
+    width: auto;
+}
+
+/* Apply styles only to the logo image */
+.logo img {
+    border-radius: 50px;  /* Circular border with 50px radius */
+    border: 2px solid black; /* Black outline */
+}
+
+/* Navbar styling */
+.navbar ul {
+    list-style-type: none;
+    display: flex;
+    gap: 20px;
+    align-items: center; /* Align items vertically in the navbar */
+}
+
+/* Navbar link styling */
+.navbar a {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+}
+
+/* Main section styling (Original) */
+.main-section {
+    margin-top: 50px;
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.main-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+}
+
+/* Button container */
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.button {
+    display: inline-block;
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    color: black;
+    background-color: white;
+    border: 2px solid black;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.button:hover {
+    background-color: green;
+    color: white;
+    border: 2px solid green;
+    outline: none;
+}
+
+/* Dark Mode Styles */
+.dark-mode {
+    background-color: #1e1e1e; /* Dark background */
+    color: white; /* Light text for dark mode */
+}
+
+.dark-mode header {
+    background-color: #333; /* Dark header background */
+}
+
+.dark-mode .navbar a {
+    color: white; /* White links in dark mode */
+}
+
+.dark-mode .button {
+    color: white;
+    background-color: #444; /* Darker button background */
+    border: 2px solid #888; /* Lighter border */
+}
+
+.dark-mode .button:hover {
+    background-color: #555; /* Slightly lighter on hover */
+    color: white;
+    border: 2px solid #bbb; /* Lighter border on hover */
+}
+
+.dark-mode .main-section h1 {
+    color: white; /* White text for main section header */
+}
+
+/* Dark Mode Specific Dropdown Menu Styling */
+.dark-mode .dropdown-content {
+    background-color: #333; /* Dark background for dropdown in dark mode */
+    color: white; /* White text in the dropdown */
+}
+
+.dark-mode .dropdown-content a {
+    color: white; /* White links in dark mode */
+}
+
+.dark-mode .dropdown-content a:hover {
+    background-color: #555; /* Darker background for hover */
+}
+
+/* Dropdown Menu Styling */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    background-color: transparent; /* Transparent button */
+    color: white; /* White text for the button */
+    padding: 10px 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.dropbtn:hover {
+    background-color: #065906; /* Slight hover effect */
+    border-color: white;
+}
+
+/* Dropdown content - base styling */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    right: 0; /* Align dropdown to the right */
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Hover effect for links inside the dropdown */
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+/* Display the dropdown when hovered */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Dark Mode Toggle Button Styling */
+.dark-mode-btn {
+    background-color: transparent; /* Transparent button */
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.dark-mode-btn img {
+    width: 25px; /* Icon size */
+    height: 25px;
+}
+
+/* Button hover effect */
+.dark-mode-btn:hover {
+    opacity: 0.8;
+}
+
+/* Login Form Container */
+.login-container {
+    width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    
+}
+
+/* Label Styling: Align to left */
+.login-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #333;
+    text-align: left; /* Align label to the left of the input */
+}
+
+/* Input fields */
+.login-container input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    
+}
+
+/* Dark Mode Styles for Login Form */
+.dark-mode .login-container {
+    background-color: #333;  /* Dark background for form */
+    color: white;  /* White text */
+    border: 1px solid #444; /* Darker border */
+}
+
+.dark-mode .login-container label {
+    color: white;  /* White text for labels in dark mode */
+}
+
+.dark-mode .login-container input {
+    background-color: #444; /* Dark input background */
+    color: white;  /* White text in input fields */
+    border: 1px solid #666;  /* Darker border for inputs */
+}
+
+/* Layout for the Login Button and Sign Up Text */
+.login-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Sign Up Link */
+.signup-link,
+.forgot-password-link {
+    font-size: 14px;
+    color: green;  /* Same color for both links */
+    text-decoration: none;
+}
+
+.signup-link:hover,
+.forgot-password-link:hover {
+    text-decoration: underline;  /* Underline effect on hover for both links */
+}
+
+/* Button container (updated for right alignment) */
+
+
+/* Login Button */
+.login-btn {
+    padding: 10px 20px;
+    background-color: green;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 20px;
+    margin-left: 380px;
+}
+
+.login-btn:hover {
+    background-color: #333;
+}
+
+/* Dark Mode Styles for Login Button */
+.dark-mode .login-btn {
+    background-color: #555;  /* Darker button */
+    color: white;
+}
+
+.dark-mode .login-btn:hover {
+    background-color: #444;  /* Darker on hover */
+}
+/* Specific Styling for Confirmation Page */
+.confirmation-container {
+    width: 400px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.confirmation-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #333;
+    text-align: left; /* Align label to the left of the input */
+}
+
+.confirmation-container input[type="text"] {
+    width: calc(100% - 100px); /* Account for button width */
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.confirmation-container .submit-btn {
+    padding: 10px 20px;
+    background-color: green;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block;
+    margin-left: 10px; /* Spacing between input and button */
+}
+
+.confirmation-container .submit-btn:hover {
+    background-color: #333;
+    color: white;
+}
+
+/* Resend Code Text */
+.confirmation-container .resend-text {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;
+    text-align: center;
+}
+
+.confirmation-container .resend-text a {
+    color: green;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.confirmation-container .resend-text a:hover {
+    text-decoration: underline;
+}
+
+/* Dark Mode Adjustments for Confirmation Page */
+.dark-mode .confirmation-container {
+    background-color: #333;
+    color: white;
+    border: 1px solid #444;
+}
+
+.dark-mode .confirmation-container input[type="text"] {
+    background-color: #444;
+    color: white;
+    border: 1px solid #666;
+}
+
+.dark-mode .confirmation-container .submit-btn {
+    background-color: #555;
+}
+
+.dark-mode .confirmation-container .submit-btn:hover {
+    background-color: #444;
+}
+
+.dark-mode .confirmation-container .resend-text a {
+    color: #aaa;
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        width: 100%;
+    }
+    .login-btn{
+        margin-left: auto;
+    }
+}
+
+/* Specific Styling for Sign Up Button */
+.signup-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px; /* Adjust button size */
+    background-color: green; /* Primary button color */
+    color: white; /* Text color */
+    font-size: 16px; /* Font size for better readability */
+    border: none; /* Remove borders */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition effect */
+}
+
+/* Hover Effect for Sign Up Button */
+.signup-btn:hover {
+    background-color: #333; /* Darker shade on hover */
+    color: white;
+}
+
+
+/* Style for the label */
+
+
+/* Styling for Account Type Dropdown */
+select#account-type {
+    width: 100%; /* Full width */
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: white; /* Light background */
+    color: #333; /* Text color */
+    margin-bottom: 15px; /* Space below the dropdown */
+    transition: border-color 0.3s ease; /* Smooth border transition */
+}
+
+/* Dark Mode Styling for Dropdown */
+.dark-mode select#account-type {
+    background-color: #444; /* Darker background */
+    color: white; /* White text */
+    border: 1px solid #666; /* Darker border */
+}
+
+/* Focused Dropdown Styling */
+select#account-type:focus {
+    border-color: green; /* Green border when focused */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Dark Mode Focused Dropdown Styling */
+.dark-mode select#account-type:focus {
+    border-color: #bbb; /* Lighter green border in dark mode */
+}
+
+#resend-code-link {
+    font-size: 14px;
+    color: #000000;
+}
+
+#resend-code-link a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+#resend-code-link a:hover {
+    text-decoration: underline;
+}
+
+/* Error Message Styling */
+.error-message {
+    color: red;
+    font-weight: bold;
+    padding: 10px;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+/* Success Message Styling */
+.success-message {
+    color: green;
+    font-weight: bold;
+    padding: 10px;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+/* Hide sections by default */
+.hidden {
+    display: none;
+}
+
+.resend-btn{
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px; /* Adjust button size */
+    background-color: green; /* Primary button color */
+    color: white; /* Text color */
+    font-size: 16px; /* Font size for better readability */
+    border: none; /* Remove borders */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition effect */
+}
+
+/* Hover Effect for Sign Up Button */
+.resend-btn:hover {
+    background-color: #333; /* Darker shade on hover */
+    color: white;
+}
+
+/* General form styling */
+#protocol-form {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+#protocol-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+#protocol-form select, #protocol-form input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#protocol-form button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#protocol-form button:hover {
+    background-color: #333;
+}
+
+/* General Section Styles */
+.dashboard-section {
+    background-color: white; /* White rectangle background */
+    padding: 20px; /* Add padding inside the rectangle */
+    margin: 20px auto; /* Center the section and add space between sections */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    width: 80%; /* Adjust width to keep sections contained */
+    text-align: left; /* Align text to the left */
+}
+
+/* Section Titles */
+.dashboard-section h2 {
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+    color: #333; /* Neutral color for titles */
+}
+
+/* Table Styling */
+#protocols-table {
+    width: 100%;
+    border-collapse: collapse; /* Remove space between table borders */
+    margin-top: 15px;
+}
+
+#protocols-table th, #protocols-table td {
+    border: 1px solid #ddd; /* Subtle border */
+    padding: 10px;
+    text-align: left; /* Align table text to the left */
+}
+
+#protocols-table th {
+    background-color: #f4f4f4; /* Light gray background for headers */
+    font-weight: bold;
+}
+
+#protocols-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternate row colors for readability */
+}
+
+/* Centered button container */
+.create-protocol-btn-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.create-protocol-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: green;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.create-protocol-btn:hover {
+    background-color: #444; /* Slightly darker hover effect */
+}
+
+/* Dark Mode for Dashboard Sections */
+.dark-mode .dashboard-section {
+    background-color: #333; /* Dark background for sections */
+    color: white; /* Light text for dark mode */
+    border: 1px solid #444; /* Subtle border for sections in dark mode */
+}
+
+/* Dark Mode Table Styling */
+.dark-mode #protocols-table th {
+    background-color: #444; /* Darker header background */
+    color: white; /* White text in headers */
+}
+
+.dark-mode #protocols-table tbody tr:nth-child(even) {
+    background-color: #3a3a3a; /* Slightly lighter row background */
+}
+
+.dark-mode #protocols-table tbody tr:nth-child(odd) {
+    background-color: #333; /* Match section background */
+}
+
+/* Dark Mode Buttons */
+.dark-mode .create-protocol-btn {
+    background-color: #555; /* Darker button */
+    color: white; /* Light text */
+}
+
+.dark-mode .create-protocol-btn:hover {
+    background-color: #444; /* Slightly lighter hover */
+}
+
+/* Dark Mode Section Titles */
+.dark-mode .dashboard-section h2 {
+    color: #ddd; /* Slightly lighter title color */
+}
+
+
+/* Forgot Button */
+.Forgot-btn {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 12px 25px; /* Adjust button size */
+    background-color: green; /* Primary button color */
+    color: white; /* Text color */
+    font-size: 16px; /* Font size for better readability */
+    border: none; /* Remove borders */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition effect */
+
+}
+
+.Forgot-btn:hover {
+    background-color: #333;
+}
+
+/* Main container for the account settings section */
+#account-settings-section {
+    padding: 20px;
+
+}
+
+#account-settings-section .container {
+    max-width: 800px;
+    margin: auto;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    padding: 20px;
+}
+
+/* Page title styling */
+#account-settings-section .page-title {
+    font-size: 2rem;
+    text-align: center;
+    color: #0c7e0c; /* Highlight color */
+    margin-bottom: 20px;
+}
+
+/* User details section styling */
+#account-settings-section #user-details {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 30px;
+    background-color: #f5f5f5;
+}
+
+#account-settings-section #user-details h2 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #0c7e0c;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+
+#account-settings-section #user-details p {
+    margin: 10px 0;
+    font-size: 1rem;
+    color: #555;
+}
+
+#account-settings-section #user-details span {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Change password section styling */
+#account-settings-section #change-password-section {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #f5f5f5;
+}
+
+#account-settings-section #change-password-section h2 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #0c7e0c;
+    padding-bottom: 5px;
+}
+
+#account-settings-section #change-password-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Form input styling */
+#account-settings-section #change-password-section .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+#account-settings-section #change-password-section .form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+#account-settings-section #change-password-section .form-group input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+/* Error text styling */
+#account-settings-section #change-password-section .form-group small.error-text {
+    color: #ff4d4f;
+    font-size: 0.875rem;
+    display: none; /* Initially hidden */
+}
+
+/* Submit button styling */
+#account-settings-section #change-password-section .submit-btn {
+
+    margin-bottom: 15px;
+    padding: 12px 25px; /* Adjust button size */
+    background-color: #0c7e0c; /* Primary button color */
+    color: white; /* Text color */
+    font-size: 16px; /* Font size for better readability */
+    border: none; /* Remove borders */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#account-settings-section #change-password-section .submit-btn:hover {
+    background-color: #0c7e0c; /* Darker shade on hover */
+}
+
+
+/* General Section Styling */
+.dashboard-section,
+.section {
+    padding: 20px;
+    background-color: #f9f9f9; /* Light background for the section */
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Section Headings */
+.dashboard-section h2,
+.section h2 {
+    font-size: 1.8rem;
+    color: #0c7e0c; /* Highlight color */
+    border-bottom: 2px solid #0c7e0c;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* Table Styling */
+.dashboard-section table,
+.section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background-color: #ffffff;
+}
+
+.dashboard-section table th,
+.section table th {
+    text-align: left;
+    padding: 10px;
+    background-color: #0c7e0c;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.dashboard-section table td,
+.section table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+.dark-mode .dashboard-section table td,
+.section table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    color: #ddd;
+}
+
+.dashboard-section table tr:nth-child(even),
+.section table tr:nth-child(even) {
+    background-color: #f5f5f5; /* Alternating row color */
+}
+
+/* Create Protocol Button Container */
+.create-protocol-btn-container {
+    text-align: right;
+    margin-top: 15px;
+}
+
+/* Create Protocol Button Styling */
+.create-protocol-btn {
+    padding: 12px 25px; /* Adjust button size */
+    background-color: #0c7e0c; /* Primary button color */
+    color: white; /* Text color */
+    font-size: 16px; /* Font size for better readability */
+    border: none; /* Remove borders */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.create-protocol-btn:hover {
+    background-color: #065906; /* Darker shade on hover */
+}
+
+
+
+
+/* Styles for the View Protocol Page */
+#viewprotocol {
+    /* Main Section Styling */
+    padding: 20px;
+    background-color: #f9f9f9; /* Light background for the main section */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    max-width: 900px;
+    margin: auto;
+}
+
+#viewprotocol h1 {
+    text-align: center;
+    color: #0c7e0c; /* Highlight color */
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+/* Subsections */
+#viewprotocol .section {
+    margin-bottom: 30px;
+    background-color: #ffffff; /* White background for subsections */
+    padding: 15px;
+    border: 1px solid #ddd; /* Border for separation */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+}
+
+/* Subsection Headings */
+#viewprotocol .section h2,
+#viewprotocol h2 {
+    color: #333;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #0c7e0c;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* Protocol Information Styling */
+#viewprotocol .section p {
+    font-size: 1rem;
+    margin: 10px 0;
+    color: #555;
+}
+
+#viewprotocol .section p strong {
+    color: #0c7e0c; /* Highlighted labels */
+}
+
+#viewprotocol .section span {
+    color: #333; /* Text color for data */
+}
+
+/* Table Styling */
+#viewprotocol table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background-color: #ffffff;
+}
+
+/* Dashboard-like Table Styling for View Protocol */
+#viewprotocol table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden; /* Ensures border radius applies to table edges */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+#viewprotocol table th,
+#viewprotocol table td {
+    padding: 12px 15px; /* Spacing for table cells */
+    text-align: left; /* Left-align content */
+    border-bottom: 1px solid #ddd; /* Row separation */
+    font-size: 1rem;
+    color: #333; /* Text color */
+}
+
+#viewprotocol table th {
+    background-color: #0c7e0c; /* Header background */
+    color: #ffffff; /* Header text color */
+    font-weight: bold;
+    text-transform: uppercase; /* Capitalized headers */
+    min-width: 150px;
+    max-width: 150px;
+}
+
+#viewprotocol table tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternating row colors */
+}
+
+#viewprotocol table tr:hover {
+    background-color: #f1f1f1; /* Row highlight on hover */
+    transition: background-color 0.3s ease; /* Smooth hover transition */
+}
+
+/* No border for the last row */
+#viewprotocol table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Responsive Table Design */
+@media (max-width: 768px) {
+    #viewprotocol table th,
+    #viewprotocol table td {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+}
+
+/* Submit Button Styling */
+#viewprotocol button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px; /* Button size */
+    background-color: #0c7e0c; /* Primary button color */
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#viewprotocol button:hover {
+    background-color: #065906; /* Darker shade on hover */
+}
+
+/* File Download Section */
+#viewprotocol #download-files-table {
+    margin-top: 20px;
+}
+
+#viewprotocol #download-files-table th,
+#viewprotocol #download-files-table td {
+    text-align: left;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #viewprotocol {
+        padding: 15px;
+    }
+
+    #viewprotocol h1,
+    #viewprotocol h2 {
+        font-size: 1.5rem;
+    }
+
+    #viewprotocol table th,
+    #viewprotocol table td {
+        font-size: 0.9rem;
+    }
+
+    #viewprotocol button {
+        font-size: 0.9rem;
+    }
+}
+
+
+/* Main container for the viewprotocol section */
+#viewprotocol {
+    padding: 20px;
+    background-color: #f9f9f9; /* Light background for the main section */
+}
+
+#viewprotocol .main-section {
+    max-width: 900px;
+    margin: auto;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    padding: 20px;
+}
+
+/* Page title styling */
+#viewprotocol .main-section h1 {
+    font-size: 2rem;
+    text-align: center;
+    color: #0c7e0c; /* Highlight color */
+    margin-bottom: 20px;
+}
+
+/* Section styling */
+#viewprotocol .section {
+    margin-bottom: 30px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f5f5f5;
+}
+
+#viewprotocol .section h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-top: 0;
+    border-bottom: 2px solid #0c7e0c;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* Protocol information details */
+#viewprotocol .section p {
+    font-size: 1rem;
+    margin: 10px 0;
+    color: #555;
+}
+
+#viewprotocol .section p strong {
+    color: #333;
+}
+
+/* Table styling (like protocols-table) */
+#viewprotocol table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+#viewprotocol table thead {
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+#viewprotocol table thead th {
+    padding: 10px;
+    text-align: left;
+    font-size: 1rem;
+}
+
+#viewprotocol table tbody tr {
+    border-bottom: 1px solid #ddd;
+}
+
+#viewprotocol table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#viewprotocol table tbody td {
+    padding: 10px;
+    font-size: 1rem;
+    color: #333;
+}
+
+/* Submit Files button styling */
+#viewprotocol button {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 12px 25px;
+    background-color: #0c7e0c;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    
+}
+
+#viewprotocol button:hover {
+    background-color: #095b09;
+}
+
+/* Targeting only the comments section in viewprotocol.html */
+#comments-section {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+#comments-section h2 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+#comments-form {
+    display: flex;
+    flex-direction: column;
+    padding-left: 40px;
+    padding-right: 40px;
+    text-align: left;
+}
+
+#comments-form .form-group {
+    margin-bottom: 15px;
+    
+}
+
+#comments-form label {
+    font-size: 1em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: left;
+    width: 100%;
+}
+
+#comments-form input,
+#comments-form textarea {
+    font-size: 1em;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+}
+
+#comments-form textarea {
+    resize: vertical;
+}
+
+#comments-form button {
+    background-color: #0c7e0c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.1em;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    align-self: center;
+}
+
+#comments-form button:hover {
+    background-color: #065906;
+}

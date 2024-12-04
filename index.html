@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal</title>
+    <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="img/logo.png" alt="Logo">
+            </a>
+            <nav class="navbar">
+                <ul>
+                    <!-- Dark Mode Toggle Button -->
+                    <button class="dark-mode-btn" onclick="toggleDarkMode()">
+                        <img id="dark-mode-icon" src="img/light-icon.png" alt="Dark Mode" />
+                    </button>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Section with Login Form -->
+    <section class="main-section">
+        <h1>Portal Login</h1>
+        <div class="login-container">
+            <form id="login-form" onsubmit="event.preventDefault(); ">
+                <label for="email">Email:</label>
+                <input type="email" id="student-email" name="email" required placeholder="Enter your email" />
+    
+                <label for="password">Password:</label>
+                <input type="password" id="student-password" name="password" required placeholder="Enter your password" />
+    
+                <!-- Horizontal layout for Login button, Sign up text, and Forgot password -->
+                <div class="login-actions">
+                    <a href="signup.html" id="student-signup" class="signup-link">Sign Up</a>
+                    <a href="forgotpassword.html" id="forgot-password" class="forgot-password-link">Forgot Password?</a>
+                </div>
+    
+                <!-- Login Button (moved inside the form container) -->
+                <button type="submit" id="student-login" class="login-btn" onclick="handleLoginForm()">Login</button>
+            </form>
+            <div id="message" class="message"></div>
+        </div>
+    </section>
+    
+    <script src="js/script.js"></script>
+</body>
+</html>

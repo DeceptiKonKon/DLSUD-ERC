@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Sign Up</title>
+    <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="img/logo.png" alt="Logo">
+            </a>
+            <nav class="navbar">
+                <ul>
+                    <!-- Dark Mode Toggle Button -->
+                    <button class="dark-mode-btn" onclick="toggleDarkMode()">
+                        <img id="dark-mode-icon" src="img/light-icon.png" alt="Dark Mode" />
+                    </button>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Section -->
+    <section class="main-section">
+        <h1>Sign Up</h1>
+        <div class="login-container">
+            <form id="signup-form" onsubmit="event.preventDefault(); handleSignupForm();">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required placeholder="Enter your name" />
+    
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email" />
+    
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required placeholder="Enter your password" />
+    
+                <label for="confirm-password">Confirm Password:</label>
+                <input type="password" id="confirm-password" name="confirm-password" required placeholder="Confirm your password" />
+            
+                <!-- Dropdown for Account Type -->
+                <label for="account-type">Account Type:</label>
+                <select id="account-type" name="account-type" required>
+                    <option value="student">Student</option>
+                    <option value="ethics-reviewer">Ethics Reviewer</option>
+                </select>
+    
+                <!-- Sign Up Button -->
+                <button type="submit" class="signup-btn">Sign Up</button>
+            </form>            
+    
+            <!-- Error/Success Message -->
+            <div id="message" class="message"></div>
+        </div>
+    </section>
+    
+    <script src="js/script.js"></script>
+</body>
+</html>
