@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <div class="header-container">
+            <a href="dashboard.html" class="logo">
+                <img src="img/logo.png" alt="Logo">
+            </a>
+            <nav class="navbar">
+                <ul>
+                    <!-- Dark Mode Toggle Button -->
+                    <button class="dark-mode-btn" onclick="toggleDarkMode()">
+                        <img id="dark-mode-icon" src="img/light-icon.png" alt="Dark Mode" />
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <li class="dropdown">
+                        <button class="dropbtn">Menu</button>
+                        <div id="myDropdown" class="dropdown-content">
+                            <a href="dashboard.html">Dashboard</a>
+                            <a href="accountsettings.html">Account Settings</a>
+                            <a href="index.html">Log Out</a>
+                        </div>                        
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="account-settings-section">
+        <div class="container">
+            <h1 class="page-title">Account Settings</h1>
+        
+            <!-- User Details Section -->
+            <section id="user-details" class="info-section">
+                <h2>User Details</h2>
+                <p>Email: <span id="user-email">johndoe@example.com</span></p>
+                <p>Name: <span id="user-name">John Doe</span></p>
+                <p>Account Type: <span id="account-type">Admin</span></p>
+            </section>
+        
+            <!-- Change Password Section -->
+            <section id="change-password-section" class="info-section">
+                <h2>Change Password</h2>
+                <form id="password-change-form">
+                    <div class="form-group">
+                        <label for="current-password">Current Password:</label>
+                        <input type="password" id="current-password" required />
+                        <small id="current-password-error" class="error-text" style="display: none;">Please enter your current password.</small>
+                    </div>
+        
+                    <div class="form-group">
+                        <label for="new-password">New Password:</label>
+                        <input type="password" id="new-password" required />
+                        <small id="new-password-error" class="error-text" style="display: none;">Password must be at least 6 characters long.</small>
+                    </div>
+        
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password:</label>
+                        <input type="password" id="confirm-password" required />
+                        <small id="confirm-password-error" class="error-text" style="display: none;">Passwords do not match.</small>
+                    </div>
+        
+                    <button type="submit" class="submit-btn">Submit</button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    
+
+    <!-- Link to External JavaScript File -->
+    <script src="js/script.js"></script>
+</body>
+</html>
