@@ -279,6 +279,31 @@
                         </tbody>
                     </table>
             </section>
+            <section id="forum-section" class="section">
+                <h1>FullBoard Forum</h1>
+                
+                <form id="forum-form">
+                    <div class="form-group">
+                        <label for="message">Enter Message:</label>
+                        <textarea id="message" name="message" rows="4" cols="50" placeholder="Write your message here..." required></textarea>
+                    </div>
+                    
+                    <button type="button" id="postMessageBtn">Post Message</button>
+                </form>
+                
+                <h2>Forum Comments</h2>
+                <table id="forumTable">
+                    <thead>
+                        <tr>
+                            <th>Forum Comment</th>
+                            <th>Time Stamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Messages will appear here -->
+                    </tbody>
+                </table>
+            </section>
             
              <!-- Reviewer Status Section -->
             <section id="reviewer-status-section" class="section">
@@ -296,20 +321,6 @@
                 </table>
             </section>
             
-            <section id="email-every-board-member-section" class="section">
-                <h2>Email Every Board Member</h2>
-                <form id="email-form">
-                    <div class="form-group">
-                        <label for="email-subject">Subject:</label>
-                        <input type="text" id="email-subject" name="subject" placeholder="Enter email subject" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email-body">Body:</label>
-                        <textarea id="email-body" name="body" placeholder="Enter your message here" rows="5" required></textarea>
-                    </div>
-                    <button type="button" onclick="sendEmailToAllBoardMembers()">Send Email</button>
-                </form>
-            </section>
         </section>
     </main>
     
