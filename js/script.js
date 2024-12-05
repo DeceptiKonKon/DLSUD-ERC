@@ -105,7 +105,6 @@ window.onload = () => {
     if (window.location.pathname.endsWith('viewprotocol.html')) {
 
             initializeViewProtocolPage()
-            fetchProtocolData()
             populateReviewers()
             handleReviewerCountChange()
 
