@@ -1,37 +1,3 @@
-document.addEventListener('DOMContentLoaded', async function() {
-    // Check if we're on the dashboard.html page
-    if (window.location.pathname.includes('dashboard.html')) {
-        const accountType = sessionStorage.getItem('accountType');
-
-        if (accountType === 'student') {
-
-            try {
-                await fetchProtocols(); // Try to fetch protocols
-            } catch (error) {
-                // Log the error but allow the page to continue running without interruptions
-                console.error('Error occurred while fetching protocols:', error);
-                // Optionally, you can also notify the user without disrupting the UI.
-                alert('An issue occurred while fetching protocols, but the page continues to work.');
-            }
-        } 
-        if (accountType === 'erc-secretary') {
-
-            try {
-                await fetchsecretaryProtocols(); // Try to fetch protocols
-            } catch (error) {
-                // Log the error but allow the page to continue running without interruptions
-                console.error('Error occurred while fetching protocols:', error);
-                // Optionally, you can also notify the user without disrupting the UI.
-                alert('An issue occurred while fetching protocols, but the page continues to work.');
-            }
-        } 
-    }
-});
-
-
-
-
-
 // Function to handle dark mode toggle
 function toggleDarkMode() {
     const body = document.body;
@@ -100,7 +66,19 @@ window.onload = () => {
             if (accountType == 'erc-secretary') {
                 initDashboardPage();
                 fetchsecretaryProtocols()
+
             }
+            if (accountType == 'erc-chair') {
+                initDashboardPage();
+                fetchchairProtocols()
+                document.getElementById('postMessageBtn').addEventListener('click', function() {
+                    const message = document.getElementById('message').value;
+                    if (message) {
+                        postMessage(protoid, message);
+                    }
+                });
+            }
+    }
     }
     if (window.location.pathname.endsWith('viewprotocol.html')) {
 
@@ -108,9 +86,10 @@ window.onload = () => {
             populateReviewers()
             handleReviewerCountChange()
 
+
     }
     
-}
+
 
 
 
@@ -360,12 +339,14 @@ function showSectionBasedOnAccountType(accountType) {
     const ethicsReviewerSection = document.getElementById('ethics-reviewer-section');
     const ercChairSection = document.getElementById('erc-chair-section');
     const ercSecretarySection = document.getElementById('erc-secretary-section');
+    const laymanSection = document.getElementById('layman-section');
 
     // Hide all sections initially
     studentSection.classList.add('hidden');
     ethicsReviewerSection.classList.add('hidden');
     ercChairSection.classList.add('hidden');
     ercSecretarySection.classList.add('hidden');
+    laymanSection.classList.add('hidden');
 
     // Show the section based on the account type
     switch (accountType) {
@@ -379,6 +360,9 @@ function showSectionBasedOnAccountType(accountType) {
             ercChairSection.classList.remove('hidden');
             break;
         case 'erc-secretary':
+            ercSecretarySection.classList.remove('hidden');
+            break;
+        case 'layman':
             ercSecretarySection.classList.remove('hidden');
             break;
         default:
@@ -487,6 +471,7 @@ async function handleProtocolForm() {
         const category = document.getElementById('category').value;
         const experimentType = document.getElementById('experiment-type')?.value || null;
 
+
         // Get the email from sessionStorage
         const userEmail = sessionStorage.getItem('userEmail');
 
@@ -531,8 +516,7 @@ async function handleProtocolForm() {
             }
         } catch (error) {
             // Handle network or unexpected errors
-            alert('An error occurred: ' + error.message);
-            console.error('Error:', error);
+            window.location.href = 'dashboard.html';
         }
     });
 }
@@ -730,6 +714,7 @@ async function submitFiles() {
     const files = document.querySelectorAll('input[type="file"]');
     const fileTypes = document.querySelectorAll('input[type="file"]');
 
+
     if (!protoid) {
         alert("Protoid is missing.");
         return;
@@ -747,6 +732,7 @@ async function submitFiles() {
         console.log('Files:', files);
         console.log('File Types:', fileTypes);
         alert(`Mismatch between files and file types. Files: ${files.length}, File Types: ${fileTypes.length}`);
+        uploadButton.disabled = false; // Re-enable the button
         return;
     }
 
@@ -939,6 +925,35 @@ async function fetchsecretaryProtocols() {
         console.error('Error fetching protocols:', error);
     }
 }
+
+async function fetchchairProtocols() {
+    const apiUrl = `https://dlsudercproject.pythonanywhere.com/fetch-chair-protocols`;
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.status === 'success') {
+                displayAllProtocols(data.protocols);
+            } else {
+                console.error(data.message);
+            }
+        } else {
+            console.error('Failed to fetch protocols');
+        }
+    } catch (error) {
+        console.error('Error fetching protocols:', error);
+    }
+}
+
+
+
 function displayAllProtocols(protocols) {
     const tableBody = document.querySelector('#all-protocols-table tbody');
     tableBody.innerHTML = '';  // Clear any existing rows
@@ -996,60 +1011,6 @@ async function getUserRole() {
     }
 }
 
-
-function displayChairProtocols(protocols) {
-    const tableBody = document.querySelector('#assign-protocols-table tbody');
-    tableBody.innerHTML = '';  // Clear any existing rows
-
-    protocols.forEach(protocol => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${protocol.Protoid}</td>
-            <td>${protocol.ResearchTitle}</td>
-            <td>${protocol.EthicsStatus}</td>
-            <td><button class="view-btn" data-protoid="${protocol.Protoid}">View</button></td>
-        `;
-
-        // Add event listener to the "View" button
-        const viewButton = row.querySelector('.view-btn');
-        viewButton.addEventListener('click', function() {
-            // Store the Protoid in sessionStorage
-            sessionStorage.setItem('protoid', protocol.Protoid);
-            console.log(protocol.Protoid); // Corrected log statement
-            // Redirect to viewprotocol.html
-            window.location.href = 'viewprotocol.html';
-        });
-
-        tableBody.appendChild(row);
-    });
-}
-
-async function fetchsecretaryProtocols() {
-
-    const apiUrl = `https://dlsudercproject.pythonanywhere.com/fetch-secretary-protocols`;
-
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            if (data.status === 'success') {
-                displayAllProtocols(data.protocols);
-            } else {
-                console.error(data.message);
-            }
-        } else {
-            console.error('Failed to fetch protocols');
-        }
-    } catch (error) {
-        console.error('Error fetching protocols:', error);
-    }
-}
 
 function sendEmail() {
     const recipientEmail = document.getElementById('email').textContent.trim();
@@ -1347,47 +1308,7 @@ function handleReviewerCountChange() {
     }
 }
 
-function assignProtocol() {
-    // Get the selected values
-    const primaryReviewer = document.getElementById('primary-reviewer').value;
-    const reviewer2 = document.getElementById('reviewer-2').value;
-    const reviewer3 = document.getElementById('reviewer-3').value;
-    const laymanName = document.getElementById('layman-name').value;
-    const laymanEmail = document.getElementById('layman-email').value;
 
-    // Validate that all fields are filled
-    if (!primaryReviewer || !reviewer2 || !reviewer3 || !laymanName || !laymanEmail) {
-        alert('Please fill in all fields');
-        return;
-    }
-
-    // Submit the form or make a fetch request to assign the protocol
-    fetch('https://dlsudercproject.pythonanywhere.com/assign-protocol', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            primaryReviewer: primaryReviewer,
-            reviewer2: reviewer2,
-            reviewer3: reviewer3,
-            laymanName: laymanName,
-            laymanEmail: laymanEmail
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            alert('Protocol assigned successfully');
-        } else {
-            alert('Error assigning protocol');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while assigning the protocol');
-    });
-}
 
 function assignProtocol() {
     const protoid = sessionStorage.getItem('protoid'); // Retrieve Protoid from sessionStorage
@@ -1687,9 +1608,9 @@ function toggleAssociatedFilesSection() {
         assignSection: document.getElementById("assign-section"),
         fullAssignSection: document.getElementById("full-assign-section"),
         reviewerStatusSection: document.getElementById("reviewer-status-section"),
-        emailEveryBoardMemberSection: document.getElementById("email-every-board-member-section"),
         submitIcafPafSection: document.getElementById("submit-icaf-paf-section"),
         icafPafDownloadSection: document.getElementById("icaf-paf-download-section"),
+        forumsection: document.getElementById("forum-section"),
     };
 
     // Hide all sections by default
@@ -1718,8 +1639,8 @@ function toggleAssociatedFilesSection() {
             sections.commentsSection.style.display = "block";
 
             // Show the Approved button and label only for ERC secretary when status is Checking
-            if (approvedButton) approvedButton.style.display = "block";
-            if (approvedLabel) approvedLabel.style.display = "block";
+            if (approvedButton) approvedButton.style.display = "inline-block";
+            if (approvedLabel) approvedLabel.style.display = "inline-block";
         }
     } else if (ethicsStatus === "Assigning") {
         if (accountType === "student") {
@@ -1729,9 +1650,9 @@ function toggleAssociatedFilesSection() {
             sections.commentsSection.style.display = "block";
         } else if (accountType === "erc-chair") {
             sections.downloadFilesSection.style.display = "block";
-            if (reviewType === "Expedited") {
+            if (reviewType === "expedited") {
                 sections.assignSection.style.display = "block";
-            } else if (reviewType === "Full-Board") {
+            } else if (reviewType === "fullboard") {
                 sections.fullAssignSection.style.display = "block";
             }
         }
@@ -1744,8 +1665,9 @@ function toggleAssociatedFilesSection() {
         } else if (accountType === "erc-chair") {
             sections.downloadFilesSection.style.display = "block";
             sections.reviewerStatusSection.style.display = "block";
+            sections.forumsection.style.display = "block";
             if (reviewType === "Full-Board") {
-                sections.emailEveryBoardMemberSection.style.display = "block";
+
             }
         } else if (accountType === "ethics-reviewer") {
             sections.downloadFilesSection.style.display = "block";
@@ -1845,4 +1767,43 @@ async function generateReviewerFilesTable() {
         console.error('Error fetching reviewer files:', error);
         alert('An error occurred while fetching reviewer files.');
     }
+}
+
+function fetchForumMessages(protoid) {
+    fetch('https://dlsudercproject.pythonanywhere.com/get_forum_messages/' + protoid)
+    .then(response => response.json())
+    .then(data => {
+        const forumTable = document.getElementById('forumTable').getElementsByTagName('tbody')[0];
+        forumTable.innerHTML = ''; // Clear the table before inserting new rows
+
+        data.forEach(msg => {
+            const row = forumTable.insertRow();
+            row.insertCell(0).textContent = msg.chat;
+            row.insertCell(1).textContent = msg.datetime;
+        });
+    })
+    .catch(error => console.error('Error fetching messages:', error));
+}
+
+function postMessage(protoid, message) {
+    const userName = sessionStorage.getItem('userName');
+    
+    fetch('https://dlsudercproject.pythonanywhere.com/post_message', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            protoid: protoid,
+            message: message,
+            user_name: userName
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        // Refresh the forum messages after posting a new one
+        fetchForumMessages(protoid);
+    })
+    .catch(error => console.error('Error posting message:', error));
 }
