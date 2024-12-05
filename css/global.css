@@ -1506,3 +1506,137 @@ select#account-type:focus {
     padding: 20px;
 }
 
+/* General styles for sections */
+#forum-section {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f9f9f9; /* Light background for light mode */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+#forum-section h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+#forum-section h2 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* Forum Comments Table */
+#forumTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#forumTable th, #forumTable td {
+    padding: 12px;
+    text-align: left;
+}
+
+#forumTable th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#forumTable td {
+    background-color: #f9f9f9;
+    border-top: 1px solid #ddd;
+}
+
+#forumTable tr:nth-child(even) td {
+    background-color: #f1f1f1;
+}
+
+/* Input fields and buttons for Forum Section */
+#forum-form {
+    display: flex;
+    flex-direction: column;
+    padding-left: 40px;
+    padding-right: 40px;
+    text-align: left;
+}
+
+#forum-form .form-group {
+    margin-bottom: 15px;
+}
+
+#forum-form label {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: left;
+    width: 100%;
+}
+
+#forum-form textarea {
+    font-size: 1em;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    resize: vertical;
+}
+
+#forum-form button {
+    background-color: #0c7e0c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.1em;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    align-self: center;
+    margin-bottom: 30px;
+}
+
+#forum-form button:hover {
+    background-color: #065906;
+}
+
+/* Dark Mode Styles */
+.dark-mode #forum-section {
+    background-color: #444; /* Darker background for sections */
+    color: white; /* White text */
+    border: 1px solid #555; /* Subtle border */
+}
+
+.dark-mode #forum-section h1,
+.dark-mode #forum-section h2 {
+    color: #ccc; /* Lighter headings */
+}
+
+.dark-mode #forum-form label,
+.dark-mode #forum-form button {
+    color: white; /* White text for labels and buttons */
+}
+
+.dark-mode #forum-form input,
+.dark-mode #forum-form textarea {
+    background-color: #555; /* Darker input background */
+    color: white; /* White text */
+    border: 1px solid #666; /* Subtle border */
+}
+
+.dark-mode #forum-form textarea::placeholder {
+    color: #ccc; /* Placeholder text in lighter gray */
+}
+
+.dark-mode #forumTable th {
+    background-color: #2e8b57; /* Darker green header for dark mode */
+}
+
+.dark-mode #forumTable td {
+    background-color: #555; /* Darker background for forum messages */
+    color: #ccc; /* Light text in the table */
+}
+
+.dark-mode #forumTable tr:nth-child(even) td {
+    background-color: #666; /* Alternating row colors */
+}
