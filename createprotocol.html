@@ -36,7 +36,7 @@
 
     <section class="main-section">
         <h1>Submit Protocol</h1>
-        <form id="protocol-form" onsubmit="event.preventDefault(); ;">
+        <form id="protocol-form" onsubmit="event.preventDefault(); handleProtocolForm()">
             <div id="input-fields">
                 <label for="proponent1">Proponent 1:</label>
                 <input type="text" id="proponent1" name="proponent1" required>
@@ -82,7 +82,7 @@
                 <!-- Dynamic file upload fields will be added here -->
             </div>
         
-            <button type="submit" onclick="handleProtocolForm()">Submit</button>
+            <button type="submit">Submit</button>
         </form>
         
     </section>
@@ -92,3 +92,4 @@
     <script src="js/script.js"></script>
 </body>
 </html>
+
