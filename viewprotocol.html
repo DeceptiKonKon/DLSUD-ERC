@@ -105,6 +105,7 @@
                         <!-- Files will be dynamically populated here -->
                     </tbody>
                 </table>
+                <button type="button" onclick="deleteProtocol()">Delete Ticket</button>
                 <button onclick="submitFiles()">Submit Files</button>
             </section>
 
@@ -201,7 +202,7 @@
             
             <section id="full-assign-section" class="section">
                 <h2>Full-Board Assign Protocol</h2>
-                <form id="assign-form">            
+                <form id="fassigning-form">            
                     <div class="form-group">
                         <label for="fprimary-reviewer">Primary Reviewer:</label>
                         <select id="fprimary-reviewer" name="fprimaryReviewer" required>
