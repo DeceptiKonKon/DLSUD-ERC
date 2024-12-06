@@ -77,6 +77,12 @@ window.onload = () => {
                         postMessage(protoid, message);
                     }
                 });
+                
+            }
+            if (accountType == 'ethics-reviewer') {
+                initDashboardPage();
+                fetchReviewerProtocols()
+
             }
     }
     }
@@ -914,7 +920,7 @@ async function fetchsecretaryProtocols() {
         if (response.ok) {
             const data = await response.json();
             if (data.status === 'success') {
-                displayAllProtocols(data.protocols);
+                displaySecProtocols(data.protocols);
             } else {
                 console.error(data.message);
             }
@@ -940,7 +946,42 @@ async function fetchchairProtocols() {
         if (response.ok) {
             const data = await response.json();
             if (data.status === 'success') {
-                displayAllProtocols(data.protocols);
+                displayChairProtocols(data.protocols);
+            } else {
+                console.error(data.message);
+            }
+        } else {
+            console.error('Failed to fetch protocols');
+        }
+    } catch (error) {
+        console.error('Error fetching protocols:', error);
+    }
+}
+
+async function fetchReviewerProtocols() {
+    // Get the reviewer email from sessionStorage
+    const reviewerEmail = sessionStorage.getItem('userEmail');
+    if (!reviewerEmail) {
+        console.error('User email is not available in sessionStorage.');
+        return;
+    }
+
+    // Construct the API URL with the reviewer email as a query parameter
+    const apiUrl = `https://dlsudercproject.pythonanywhere.com/fetch-reviewer-protocol?reviewer_email=${reviewerEmail}`;
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.status === 'success') {
+                console.log(data.protocols); // Log the fetched protocols
+                displayEthicsProtocols(data.protocols); // Update the UI
             } else {
                 console.error(data.message);
             }
@@ -953,9 +994,8 @@ async function fetchchairProtocols() {
 }
 
 
-
-function displayAllProtocols(protocols) {
-    const tableBody = document.querySelector('#all-protocols-table tbody');
+function displayChairProtocols(protocols) {
+    const tableBody = document.querySelector('#chair-protocols-table tbody');
     tableBody.innerHTML = '';  // Clear any existing rows
 
     protocols.forEach(protocol => {
@@ -973,6 +1013,60 @@ function displayAllProtocols(protocols) {
             // Store the Protoid in sessionStorage
             sessionStorage.setItem('protoid', protocol.Protoid);
             console.log(protocol.Protoid); // Corrected log statement
+            // Redirect to viewprotocol.html
+            window.location.href = 'viewprotocol.html';
+        });
+
+        tableBody.appendChild(row);
+    });
+}
+
+function displaySecProtocols(protocols) {
+    const tableBody = document.querySelector('#sec-protocols-table tbody');
+    tableBody.innerHTML = '';  // Clear any existing rows
+
+    protocols.forEach(protocol => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${protocol.Protoid}</td>
+            <td>${protocol.ResearchTitle}</td>
+            <td>${protocol.EthicsStatus}</td>
+            <td><button class="view-btn" data-protoid="${protocol.Protoid}">View</button></td>
+        `;
+
+        // Add event listener to the "View" button
+        const viewButton = row.querySelector('.view-btn');
+        viewButton.addEventListener('click', function() {
+            // Store the Protoid in sessionStorage
+            sessionStorage.setItem('protoid', protocol.Protoid);
+            console.log(protocol.Protoid); // Corrected log statement
+            // Redirect to viewprotocol.html
+            window.location.href = 'viewprotocol.html';
+        });
+
+        tableBody.appendChild(row);
+    });
+}
+
+function displayEthicsProtocols(protocols) {
+    const tableBody = document.querySelector('#ethics-protocols-table tbody');
+    tableBody.innerHTML = ''; // Clear any existing rows
+
+    protocols.forEach(protocol => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${protocol.Protoid}</td>
+            <td>${protocol.ResearchTitle}</td>
+            <td>${protocol.ReviewerStatus}</td>
+            <td><button class="view-btn" data-protoid="${protocol.Protoid}">View</button></td>
+        `;
+
+        // Add event listener to the "View" button
+        const viewButton = row.querySelector('.view-btn');
+        viewButton.addEventListener('click', function () {
+            // Store the Protoid in sessionStorage
+            sessionStorage.setItem('protoid', protocol.Protoid);
+            console.log(`Stored Protoid: ${protocol.Protoid}`); // Enhanced log statement
             // Redirect to viewprotocol.html
             window.location.href = 'viewprotocol.html';
         });
@@ -1137,6 +1231,39 @@ async function generateUpdateFilesTable() {
     }
 }
 
+function deleteProtocol() {
+    const protoid = sessionStorage.getItem('protoid'); // Assume Protoid is stored in sessionStorage
+
+    if (!protoid) {
+        alert('No protocol ID found.');
+        return;
+    }
+
+    const confirmDelete = confirm('Are you sure you want to delete this protocol? This action cannot be undone.');
+    if (!confirmDelete) return;
+
+    fetch('https://dlsudercproject.pythonanywhere.com/delete_protocol', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ protoid })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert(data.message);
+                // Redirect to another page or update the UI
+                window.location.href = 'dashboard.html';
+            } else if (data.error) {
+                alert(`Error: ${data.error}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the protocol.');
+        });
+}
 
 async function assignEthicsStatus() {
     const protoid = sessionStorage.getItem('protoid');  // Get Protoid from sessionStorage
@@ -1348,13 +1475,13 @@ function assignProtocol() {
             if (reviewerCount === 1) {
                 paymentDistribution = [300];
             } else if (reviewerCount === 2) {
-                paymentDistribution = [200, 100];
+                paymentDistribution = [100, 100];
             } else if (reviewerCount === 3) {
                 paymentDistribution = [100, 100, 100];
             }
         } else if (category === 'graduate') {
             if (reviewerCount === 1) {
-                paymentDistribution = [1750];
+                paymentDistribution = [750];
             } else if (reviewerCount === 2) {
                 paymentDistribution = [750, 500];
             } else if (reviewerCount === 3) {
@@ -1665,14 +1792,13 @@ function toggleAssociatedFilesSection() {
         } else if (accountType === "erc-chair") {
             sections.downloadFilesSection.style.display = "block";
             sections.reviewerStatusSection.style.display = "block";
-            sections.forumsection.style.display = "block";
             if (reviewType === "Full-Board") {
-
+                sections.forumsection.style.display = "block";
             }
         } else if (accountType === "ethics-reviewer") {
             sections.downloadFilesSection.style.display = "block";
             sections.submitIcafPafSection.style.display = "block";
-        }
+        } 
     } else if (ethicsStatus === "Evaluating") {
         if (accountType === "student") {
             sections.updateFilesSection.style.display = "block";
@@ -1680,12 +1806,19 @@ function toggleAssociatedFilesSection() {
             sections.downloadFilesSection.style.display = "block";
             sections.commentsSection.style.display = "block";
             sections.icafPafDownloadSection.style.display = "block";
+            
         } else if (accountType === "erc-chair") {
             sections.downloadFilesSection.style.display = "block";
             sections.icafPafDownloadSection.style.display = "block";
+            if (reviewType === "Full-Board") {
+                sections.forumsection.style.display = "block";
+            }
         } else if (accountType === "ethics-reviewer") {
             sections.downloadFilesSection.style.display = "block";
             sections.icafPafDownloadSection.style.display = "block";
+            if (reviewType === "Full-Board") {
+                sections.forumsection.style.display = "block";
+            }
         }
     }
 }
