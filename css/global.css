@@ -963,6 +963,27 @@ select#account-type:focus {
     background-color: #f5f5f5; /* Alternating row color */
 }
 
+.dark-mode .dashboard-section table tr:nth-child(even),
+.section table tr:nth-child(even) {
+    background-color: hsla(0, 0%, 0%, 0.055); /* Alternating row color */
+}
+
+
+.dashboard-section table,
+.section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background-color: #ffffff;
+}
+
+.dark-mode .dashboard-section table,
+.section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background-color: hsla(0, 0%, 100%, 0);
+}
 /* Create Protocol Button Container */
 .create-protocol-btn-container {
     text-align: right;
@@ -1365,6 +1386,40 @@ select#account-type:focus {
 #assign-form button:hover {
     background-color: #333;
 }
+
+/* General form styling */
+.dark-mode #assign-form {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+.dark-mode #assign-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+.dark-mode #assign-form select, #assign-form input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+
+
+.dark-mode #assign-form button:hover {
+    background-color: #333;
+}
+
 
 /* Dark Mode Styling for Protocol Form */
 .dark-mode #protocol-form {
