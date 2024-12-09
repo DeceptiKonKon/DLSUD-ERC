@@ -87,10 +87,26 @@ window.onload = () => {
     }
     }
     if (window.location.pathname.endsWith('viewprotocol.html')) {
+        const accountType = sessionStorage.getItem('accountType');
 
             initializeViewProtocolPage()
             populateReviewers()
             handleReviewerCountChange()
+            
+            if (accountType == 'erc-secretary') {
+                generateMoreDownloadIcafPafFilesTable()
+
+            }
+
+            if (accountType == 'ethics-reviewer') {
+                generateDownloadIcafFilesTable()
+
+            }
+            if (accountType == 'erc-chair') {
+                generateMoreDownloadIcafPafFilesTable()
+
+            }
+    
 
 
     }
@@ -527,7 +543,6 @@ async function handleProtocolForm() {
     });
 }
 
-
 async function fetchProtocols() {
     // Retrieve the email from sessionStorage
     const userEmail = sessionStorage.getItem('userEmail');
@@ -562,8 +577,6 @@ async function fetchProtocols() {
         console.error('Error fetching protocols:', error);
     }
 }
-
-
     
 function displayProtocols(protocols) {
     const tableBody = document.querySelector('#protocols-table tbody');
@@ -591,6 +604,8 @@ function displayProtocols(protocols) {
         tableBody.appendChild(row);
     });
 }
+
+
 
 
 async function fetchProtocolData() {
@@ -640,7 +655,6 @@ function displayProtocolData(protocol) {
     document.getElementById('proponent2').textContent = protocol.Proponent2 || 'N/A';
     document.getElementById('proponent3').textContent = protocol.Proponent3 || 'N/A';
     document.getElementById('acadYear').textContent = protocol.AcadYear;
-    document.getElementById('experimentType').textContent = protocol.ExperimentType || 'Not specified';
     document.getElementById('ethicsStatus').textContent = protocol.EthicsStatus;
     sessionStorage.setItem('reviewType', protocol.ReviewType);
     sessionStorage.setItem('category', protocol.Category);
@@ -712,17 +726,21 @@ function getFileTypes(experimentType, reviewType) {
     return fileTypes;
 }
 
-// Function to submit files
 async function submitFiles() {
+    const uploadButton = document.getElementById('uploadButton'); // Replace with your button's actual ID
+    if (uploadButton.disabled) return; // Ignore click if button is already disabled
+
+    // Disable the button immediately to prevent multiple clicks
+    uploadButton.disabled = true; 
 
     const formData = new FormData();
     const protoid = sessionStorage.getItem('protoid');
     const files = document.querySelectorAll('input[type="file"]');
     const fileTypes = document.querySelectorAll('input[type="file"]');
 
-
     if (!protoid) {
         alert("Protoid is missing.");
+        uploadButton.disabled = false; // Re-enable the button
         return;
     }
 
@@ -768,8 +786,12 @@ async function submitFiles() {
     } catch (error) {
         console.error('Error uploading files:', error);
         alert('An error occurred while uploading files.');
+    } finally {
+        uploadButton.disabled = false; // Re-enable the button after the process is complete
     }
 }
+
+
 
 
 // Function to fetch and populate the download files table
@@ -1295,6 +1317,96 @@ async function assignEthicsStatus() {
     }
 }
 
+async function reviewEthicsStatus() {
+    const protoid = sessionStorage.getItem('protoid');  // Get Protoid from sessionStorage
+
+    if (!protoid) {
+        alert('Protoid is missing.');
+        return;
+    }
+
+    try {
+        const formData = new FormData();
+        formData.append('protoid', protoid);
+
+        const response = await fetch('https://dlsudercproject.pythonanywhere.com/reviewing', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(result.message || 'Ethics status updated successfully.');
+        } else {
+            alert(result.message || 'Error updating the ethics status.');
+        }
+    } catch (error) {
+        console.error('Error updating ethics status:', error);
+        alert('An error occurred while updating the ethics status.');
+    }
+}
+
+async function evaluateEthicsStatus() {
+    const protoid = sessionStorage.getItem('protoid');  // Get Protoid from sessionStorage
+
+    if (!protoid) {
+        alert('Protoid is missing.');
+        return;
+    }
+
+    try {
+        const formData = new FormData();
+        formData.append('protoid', protoid);
+
+        const response = await fetch('https://dlsudercproject.pythonanywhere.com/evaluating', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(result.message || 'Ethics status updated successfully.');
+        } else {
+            alert(result.message || 'Error updating the ethics status.');
+        }
+    } catch (error) {
+        console.error('Error updating ethics status:', error);
+        alert('An error occurred while updating the ethics status.');
+    }
+}
+
+async function completedEthicsStatus() {
+    const protoid = sessionStorage.getItem('protoid');  // Get Protoid from sessionStorage
+
+    if (!protoid) {
+        alert('Protoid is missing.');
+        return;
+    }
+
+    try {
+        const formData = new FormData();
+        formData.append('protoid', protoid);
+
+        const response = await fetch('https://dlsudercproject.pythonanywhere.com/completed', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(result.message || 'Ethics status updated successfully.');
+        } else {
+            alert(result.message || 'Error updating the ethics status.');
+        }
+    } catch (error) {
+        console.error('Error updating ethics status:', error);
+        alert('An error occurred while updating the ethics status.');
+    }
+}
+
 
 let selectedReviewers = {
     primary: null,
@@ -1534,6 +1646,7 @@ function assignProtocol() {
         .then(data => {
             if (data.status === 'success') {
                 alert('Reviewers assigned successfully!');
+                reviewEthicsStatus()
             } else {
                 alert('Error assigning reviewers: ' + data.message);
             }
@@ -1629,96 +1742,6 @@ function fassignProtocol() {
 }
 
 
-// Function to submit ICAF and PAF files
-async function submiticafFiles() {
-    const protoid = sessionStorage.getItem('protoid');
-    const icafFileInput = document.getElementById('icaf-file');
-    const pafFileInput = document.getElementById('paf-file');
-
-    if (!protoid) {
-        alert("Protoid is missing.");
-        return;
-    }
-
-    if (!icafFileInput.files.length || !pafFileInput.files.length) {
-        alert("Please upload both the Informed Consent Assessment Form and Protocol Assessment Form.");
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('protoid', protoid);
-    formData.append('icaf', icafFileInput.files[0]);
-    formData.append('paf', pafFileInput.files[0]);
-
-    try {
-        const response = await fetch('https://dlsudercproject.pythonanywhere.com/icaf-upload-files', {
-            method: 'POST',
-            body: formData,
-        });
-
-        const result = await response.json();
-
-        if (result.status === 'success') {
-            alert('Files uploaded successfully!');
-            // Redirect to dashboard.html
-            window.location.href = 'dashboard.html';
-        } else {
-            alert('Error: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Error uploading files:', error);
-        alert('An error occurred while uploading files.');
-    }
-}
-
-// Function to fetch and populate the download files table
-async function generateDownloadicafFilesTable() {
-    const protoid = sessionStorage.getItem('protoid'); // Get Protoid from sessionStorage
-    const downloadFilesList = document.getElementById('icaf-paf-download-list');
-    downloadFilesList.innerHTML = ''; // Clear existing rows
-
-    if (!protoid) {
-        alert('Protoid is missing.');
-        return;
-    }
-
-    try {
-        // Fetch file data from the backend
-        const response = await fetch(`https://dlsudercproject.pythonanywhere.com/icaf-get-files/${protoid}`);
-        const result = await response.json();
-
-        if (result.status !== 'success') {
-            alert(result.message || 'Error fetching files.');
-            return;
-        }
-
-        const files = result.data; // Assuming result.data contains the array of files
-
-        files.forEach(file => {
-            const row = document.createElement('tr');
-
-            // File Type column
-            const fileTypeCell = document.createElement('td');
-            fileTypeCell.textContent = file.FileCategory; // Use FileCategory (ICAF/PAF)
-            row.appendChild(fileTypeCell);
-
-            // Download button column
-            const downloadCell = document.createElement('td');
-            const downloadButton = document.createElement('button');
-            downloadButton.textContent = 'Download';
-            downloadButton.onclick = () => {
-                window.location.href = `https://dlsudercproject.pythonanywhere.com/icaf-download-file/${file.FileID}`;
-            };
-            downloadCell.appendChild(downloadButton);
-            row.appendChild(downloadCell);
-
-            downloadFilesList.appendChild(row);
-        });
-    } catch (error) {
-        console.error('Error fetching download files:', error);
-        alert('An error occurred while fetching download files.');
-    }
-}
 
 function toggleAssociatedFilesSection() {
     const ethicsStatusElement = document.getElementById("ethicsStatus");
@@ -1729,6 +1752,8 @@ function toggleAssociatedFilesSection() {
     // Get all the section elements
     const sections = {
         associatedFilesSection: document.getElementById("associated-files-section"),
+        attachmentFilesSection: document.getElementById("attachment-files-section"),
+        changereviewTypeSection: document.getElementById("change-review-type-section"),
         updateFilesSection: document.getElementById("update-files-section"),
         downloadFilesSection: document.getElementById("download-files-section"),
         commentsSection: document.getElementById("comments-section"),
@@ -1738,6 +1763,8 @@ function toggleAssociatedFilesSection() {
         submitIcafPafSection: document.getElementById("submit-icaf-paf-section"),
         icafPafDownloadSection: document.getElementById("icaf-paf-download-section"),
         forumsection: document.getElementById("forum-section"),
+        moreicafpafDownloadSection: document.getElementById("more-icaf-paf-download-section")
+        
     };
 
     // Hide all sections by default
@@ -1798,6 +1825,7 @@ function toggleAssociatedFilesSection() {
         } else if (accountType === "ethics-reviewer") {
             sections.downloadFilesSection.style.display = "block";
             sections.submitIcafPafSection.style.display = "block";
+            sections.icafPafDownloadSection.style.display = "block";
         } 
     } else if (ethicsStatus === "Evaluating") {
         if (accountType === "student") {
@@ -1823,7 +1851,6 @@ function toggleAssociatedFilesSection() {
     }
 }
 
-
 function initializeViewProtocolPage() {
     fetchProtocolData().then(() => {
         toggleAssociatedFilesSection();
@@ -1832,75 +1859,6 @@ function initializeViewProtocolPage() {
     });
 }
 
-async function generateReviewerFilesTable() {
-    const protoid = sessionStorage.getItem('protoid');
-    const downloadFilesList = document.getElementById('icaf-paf-download-list');
-    downloadFilesList.innerHTML = '';
-
-    if (!protoid) {
-        alert('Protoid is missing.');
-        return;
-    }
-
-    try {
-        // Fetch data from the backend
-        const response = await fetch(`https://dlsudercproject.pythonanywhere.com/get-reviewer-files/${protoid}`);
-        const result = await response.json();
-
-        if (result.status !== 'success') {
-            alert(result.message || 'Error fetching reviewer files.');
-            return;
-        }
-
-        const files = result.data;
-
-        files.forEach(file => {
-            const row = document.createElement('tr');
-
-            // Reviewer Name column
-            const reviewerNameCell = document.createElement('td');
-            reviewerNameCell.textContent = file.ReviewerName;
-            row.appendChild(reviewerNameCell);
-
-            // ICAF Download button
-            if (file.ICAFFileName) {
-                const icafCell = document.createElement('td');
-                const icafButton = document.createElement('button');
-                icafButton.textContent = `Download ${file.ICAFFileName}`;
-                icafButton.onclick = () => {
-                    window.location.href = `https://dlsudercproject.pythonanywhere.com/download-reviewer-file/${file.ReviewerFileID}/icaf`;
-                };
-                icafCell.appendChild(icafButton);
-                row.appendChild(icafCell);
-            } else {
-                const icafCell = document.createElement('td');
-                icafCell.textContent = 'No ICAF file';
-                row.appendChild(icafCell);
-            }
-
-            // Protocol Download button
-            if (file.ProtocolFileName) {
-                const protocolCell = document.createElement('td');
-                const protocolButton = document.createElement('button');
-                protocolButton.textContent = `Download ${file.ProtocolFileName}`;
-                protocolButton.onclick = () => {
-                    window.location.href = `https://dlsudercproject.pythonanywhere.com/download-reviewer-file/${file.ReviewerFileID}/protocol`;
-                };
-                protocolCell.appendChild(protocolButton);
-                row.appendChild(protocolCell);
-            } else {
-                const protocolCell = document.createElement('td');
-                protocolCell.textContent = 'No Protocol file';
-                row.appendChild(protocolCell);
-            }
-
-            downloadFilesList.appendChild(row);
-        });
-    } catch (error) {
-        console.error('Error fetching reviewer files:', error);
-        alert('An error occurred while fetching reviewer files.');
-    }
-}
 
 function fetchForumMessages(protoid) {
     fetch('https://dlsudercproject.pythonanywhere.com/get_forum_messages/' + protoid)
@@ -1940,3 +1898,300 @@ function postMessage(protoid, message) {
     })
     .catch(error => console.error('Error posting message:', error));
 }
+
+async function submiticafFiles() {
+    // Get the protoid and user email from sessionStorage
+    const protoid = sessionStorage.getItem('protoid');
+    const userEmail = sessionStorage.getItem('userEmail');
+
+    // Debugging: Log the values
+    console.log('Protoid:', protoid);
+    console.log('User Email:', userEmail);
+
+    // Check for protoid and userEmail
+    if (!protoid || !userEmail) {
+        alert("Protoid or user email is missing.");
+        return;
+    }
+
+    // Prepare form data
+    const formData = new FormData();
+    formData.append('protoid', protoid);
+    formData.append('userEmail', userEmail);
+
+    // Get file inputs
+    const icafInput = document.getElementById('icaffile');
+    const pafInput = document.getElementById('paffile');
+
+    // Debugging: Ensure file input elements are present
+    console.log('ICAF Input Element:', icafInput);
+    console.log('PAF Input Element:', pafInput);
+
+    if (!icafInput || !pafInput) {
+        alert("File input elements are missing.");
+        return;
+    }
+
+    // Validate file uploads
+    if (!icafInput.files.length || !pafInput.files.length) {
+        alert("Please upload both ICAF and PAF files.");
+        return;
+    }
+
+    // Debugging: Log the selected files
+    console.log('ICAF File:', icafInput.files[0]);
+    console.log('PAF File:', pafInput.files[0]);
+
+    // Append files to FormData
+    formData.append('icaf', icafInput.files[0]);
+    formData.append('paf', pafInput.files[0]);
+
+    const uploadButton = document.getElementById('uploadButton');
+    if (uploadButton) {
+        uploadButton.disabled = true;
+        uploadButton.textContent = 'Uploading...';
+    }
+
+    try {
+        // Send files to the backend
+        const response = await fetch('https://dlsudercproject.pythonanywhere.com/icaf-upload-files', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            alert('Files uploaded successfully!');
+            // Redirect to the dashboard
+            window.location.href = 'dashboard.html';
+        } else {
+            alert('Error: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error uploading files:', error);
+        alert('An error occurred while uploading files.');
+    } finally {
+        if (uploadButton) {
+            uploadButton.disabled = false;
+            uploadButton.textContent = 'Submit Files';
+        }
+    }
+}
+
+async function generateDownloadIcafFilesTable() {
+    const protoid = sessionStorage.getItem('protoid'); // Get Protoid from sessionStorage
+    const userEmail = sessionStorage.getItem('userEmail'); // Get User Email from sessionStorage
+    const downloadFilesList = document.getElementById('icaf-paf-download-list');
+    downloadFilesList.innerHTML = ''; // Clear existing rows
+
+    if (!protoid || !userEmail) {
+        alert('Protoid or User Email is missing.');
+        return;
+    }
+
+    try {
+        // Fetch data from the backend for filenames
+        const response = await fetch(`https://dlsudercproject.pythonanywhere.com/get-icaf-paf-files?protoid=${protoid}&userEmail=${userEmail}`);
+        const result = await response.json();
+
+        if (result.status !== 'success') {
+            alert(result.message || 'Error fetching files.');
+            return;
+        }
+
+        const files = result.files; // Assuming result.files contains the array of files
+
+        // Loop through the files and display them in separate rows
+        files.forEach(file => {
+            const icafRow = document.createElement('tr');
+
+            // ICAF File Type column
+            const icafFileTypeCell = document.createElement('td');
+            icafFileTypeCell.textContent = file.icaf_filename; // Use ICAF file name
+            icafRow.appendChild(icafFileTypeCell);
+
+            // ICAF Download button column
+            const icafDownloadCell = document.createElement('td');
+            const icafDownloadButton = document.createElement('button');
+            icafDownloadButton.textContent = 'Download';
+            icafDownloadButton.onclick = () => {
+                // Trigger download for ICAF file by calling the backend route
+                window.location.href = `https://dlsudercproject.pythonanywhere.com/get-icaf-file?protoid=${protoid}&userEmail=${userEmail}`;
+            };
+            icafDownloadCell.appendChild(icafDownloadButton);
+            icafRow.appendChild(icafDownloadCell);
+
+            downloadFilesList.appendChild(icafRow);
+
+            const pafRow = document.createElement('tr');
+
+            // PAF File Type column
+            const pafFileTypeCell = document.createElement('td');
+            pafFileTypeCell.textContent = file.paf_filename; // Use PAF file name
+            pafRow.appendChild(pafFileTypeCell);
+
+            // PAF Download button column
+            const pafDownloadCell = document.createElement('td');
+            const pafDownloadButton = document.createElement('button');
+            pafDownloadButton.textContent = 'Download';
+            pafDownloadButton.onclick = () => {
+                // Trigger download for PAF file by calling the backend route
+                window.location.href = `https://dlsudercproject.pythonanywhere.com/get-paf-file?protoid=${protoid}&userEmail=${userEmail}`;
+            };
+            pafDownloadCell.appendChild(pafDownloadButton);
+            pafRow.appendChild(pafDownloadCell);
+
+            downloadFilesList.appendChild(pafRow);
+        });
+    } catch (error) {
+        console.error('Error fetching download files:', error);
+        alert('An error occurred while fetching download files.');
+    }
+}
+
+
+async function applyReviewType() {
+    const protoid = sessionStorage.getItem('protoid'); // Retrieve protoid from session storage
+    const reviewType = document.getElementById('review-type').value; // Get selected review type
+
+    if (!protoid || !reviewType) {
+        alert('Please ensure a protocol is selected and review type is chosen.');
+        return;
+    }
+
+    // Prepare the data to be sent
+    const data = { protoid: parseInt(protoid), reviewType: reviewType };
+
+    try {
+        // Send data to the backend
+        const response = await fetch('https://dlsudercproject.pythonanywhere.com/update_review_type', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        // Parse the response
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(result.message); // Success message
+        } else {
+            alert(result.error || 'An error occurred while updating the review type.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to connect to the server. Please try again later.');
+    }
+}
+
+
+async function generateMoreDownloadIcafPafFilesTable() {
+    const protoid = sessionStorage.getItem('protoid');
+    const tableBody = document.getElementById('more-icaf-paf-download-list');
+    tableBody.innerHTML = '';
+
+    if (!protoid) {
+        alert('Protoid is missing.');
+        return;
+    }
+
+    try {
+        const response = await fetch(`https://dlsudercproject.pythonanywhere.com/get-more-icaf-paf-files?protoid=${protoid}`);
+        const result = await response.json();
+
+        if (result.status !== 'success') {
+            alert(result.message);
+            return;
+        }
+
+        const files = result.files;
+
+        files.forEach(file => {
+            // ICAF File Row
+            if (file.icaf_filename) {
+                const row = document.createElement('tr');
+
+                const typeCell = document.createElement('td');
+                typeCell.textContent = `${file.reviewer_name} - ICAF`;
+
+                const downloadCell = document.createElement('td');
+                const downloadButton = document.createElement('button');
+                downloadButton.textContent = 'Download ICAF';
+                downloadButton.onclick = () => {
+                    window.location.href = `https://dlsudercproject.pythonanywhere.com/get-more-icaf-file?protoid=${protoid}&filename=${file.icaf_filename}`;
+                };
+
+                downloadCell.appendChild(downloadButton);
+                row.appendChild(typeCell);
+                row.appendChild(downloadCell);
+                tableBody.appendChild(row);
+            }
+
+            // PAF File Row
+            if (file.paf_filename) {
+                const row = document.createElement('tr');
+
+                const typeCell = document.createElement('td');
+                typeCell.textContent = `${file.reviewer_name} - PAF`;
+
+                const downloadCell = document.createElement('td');
+                const downloadButton = document.createElement('button');
+                downloadButton.textContent = 'Download PAF';
+                downloadButton.onclick = () => {
+                    window.location.href = `https://dlsudercproject.pythonanywhere.com/get-more-paf-file?protoid=${protoid}&filename=${file.paf_filename}`;
+                };
+
+                downloadCell.appendChild(downloadButton);
+                row.appendChild(typeCell);
+                row.appendChild(downloadCell);
+                tableBody.appendChild(row);
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching files:', error);
+        alert('An error occurred while fetching files.');
+    }
+}
+
+async function markReviewerCompleted() {
+    const protoid = sessionStorage.getItem('protoid'); // Retrieve Protoid from session storage
+    const reviewerEmail = sessionStorage.getItem('userEmail'); // Retrieve ReviewerEmail from session storage
+
+    if (!protoid || !reviewerEmail) {
+        alert('Protoid or ReviewerEmail is missing. Please log in or select a protocol.');
+        return;
+    }
+
+    try {
+        // Send data to the backend
+        const response = await fetch('https://dlsudercproject.pythonanywhere.com/reviewer-completed', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                protoid: protoid,
+                reviewerEmail: reviewerEmail
+            })
+        });
+
+        // Parse the response
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(result.message); // Success message
+            // Optionally, update the table to reflect the new status
+
+        } else {
+            alert(result.message || 'An error occurred while updating the reviewer status.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to connect to the server. Please try again later.');
+    }
+}
+
+
