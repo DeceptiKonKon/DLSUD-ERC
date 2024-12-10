@@ -1818,9 +1818,11 @@ function toggleAssociatedFilesSection() {
         } else if (accountType === "erc-secretary") {
             sections.downloadFilesSection.style.display = "block";
             sections.commentsSection.style.display = "block";
+            sections.icafPafDownloadSection.style.display = "block";
         } else if (accountType === "erc-chair") {
             sections.downloadFilesSection.style.display = "block";
             sections.reviewerStatusSection.style.display = "block";
+            sections.icafPafDownloadSection.style.display = "block";
             if (reviewType === "Full-Board") {
                 sections.forumsection.style.display = "block";
             }
