@@ -1756,8 +1756,6 @@ function toggleAssociatedFilesSection() {
     // Get all the section elements
     const sections = {
         associatedFilesSection: document.getElementById("associated-files-section"),
-        attachmentFilesSection: document.getElementById("attachment-files-section"),
-        changereviewTypeSection: document.getElementById("change-review-type-section"),
         updateFilesSection: document.getElementById("update-files-section"),
         downloadFilesSection: document.getElementById("download-files-section"),
         commentsSection: document.getElementById("comments-section"),
