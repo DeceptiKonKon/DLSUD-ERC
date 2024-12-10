@@ -478,6 +478,7 @@ if (reviewType === 'expedited' || reviewType === 'fullboard') {
 if (window.location.pathname.includes('signup.html')){
 document.getElementById('review-type').addEventListener('change', adjustForm);
 }
+
 async function handleProtocolForm() {
     document.getElementById('protocol-form').addEventListener('submit', async function(event) {
         event.preventDefault(); // Prevent default form submission
@@ -543,6 +544,7 @@ async function handleProtocolForm() {
     });
 }
 
+
 async function fetchProtocols() {
     // Retrieve the email from sessionStorage
     const userEmail = sessionStorage.getItem('userEmail');
@@ -577,6 +579,8 @@ async function fetchProtocols() {
         console.error('Error fetching protocols:', error);
     }
 }
+
+
     
 function displayProtocols(protocols) {
     const tableBody = document.querySelector('#protocols-table tbody');
@@ -604,8 +608,6 @@ function displayProtocols(protocols) {
         tableBody.appendChild(row);
     });
 }
-
-
 
 
 async function fetchProtocolData() {
@@ -726,6 +728,7 @@ function getFileTypes(experimentType, reviewType) {
 
     return fileTypes;
 }
+
 
 async function submitFiles() {
     const uploadButton = document.getElementById('uploadButton'); // Replace with your button's actual ID
