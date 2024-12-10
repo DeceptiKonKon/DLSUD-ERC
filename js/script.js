@@ -655,6 +655,7 @@ function displayProtocolData(protocol) {
     document.getElementById('proponent2').textContent = protocol.Proponent2 || 'N/A';
     document.getElementById('proponent3').textContent = protocol.Proponent3 || 'N/A';
     document.getElementById('acadYear').textContent = protocol.AcadYear;
+    document.getElementById('experimentType').textContent = protocol.ExperimentType || 'Not specified';
     document.getElementById('ethicsStatus').textContent = protocol.EthicsStatus;
     sessionStorage.setItem('reviewType', protocol.ReviewType);
     sessionStorage.setItem('category', protocol.Category);
