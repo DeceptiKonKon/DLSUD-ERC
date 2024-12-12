@@ -40,7 +40,7 @@
             <!-- Protocol Information Section -->
             <section id="protocol-information-section" class="section">
                 <h2>Protocol Information</h2>
-                                <table id="protocol-info-table">
+                <table id="protocol-info-table">
                     <tbody>
                         <tr>
                             <th>Research Title</th>
@@ -79,10 +79,6 @@
                             <td><span id="acadYear"></span></td>
                         </tr>
                         <tr>
-                            <th>Experiment Type</th>
-                            <td><span id="experimentType"></span></td>
-                        </tr>
-                        <tr>
                             <th>Ethics Status</th>
                             <td><span id="ethicsStatus"></span></td>
                         </tr>
@@ -92,7 +88,6 @@
                 
             </section>
     
-            <!-- Associated Files Section -->
             <section id="associated-files-section" class="section">
                 <h2>Attachment Files</h2>
                 <table id="files-table">
@@ -106,9 +101,23 @@
                         <!-- Files will be dynamically populated here -->
                     </tbody>
                 </table>
-                <button type="button" onclick="deleteProtocol()">Delete Ticket</button>
-                <button onclick="submitFiles()">Submit Files</button>
+                
+                <!-- Radio buttons for including "Link/Site of Data Sources (if data mining)" -->
+                <div id="link-site-option">
+                    <label>
+                        <input type="radio" name="add-link-site" value="yes" checked>
+                        Yes
+                    </label>
+                    <label>
+                        <input type="radio" name="add-link-site" value="no">
+                        No
+                    </label>
+                </div>
+                
+                <button id="uploadButton" onclick="submitFiles()">Submit Files</button>
             </section>
+            
+            
 
             <section id="update-files-section" class="section">
                 <h2>Update Files</h2>
@@ -138,14 +147,12 @@
                         </tr>
                     </thead>
                     <tbody id="download-files-list">
-                        <!-- Dynamically populated download files -->
+                    <!-- Dynamically populated download files -->
                     </tbody>
                 </table>
-                <button type="button" id="Approved" onclick="assignEthicsStatus()">Approved</button>
-                <div>
-                <label id="Approved" style="margin-top: 10;">Click the button for Approval </label>
-                </div>
             </section>
+
+            
             <section id="comments-section" class="section">
                 <h2>Comments</h2>
                 <form id="comments-form">
@@ -169,7 +176,7 @@
                         <label for="reviewer-count">Number of Reviewers:</label>
                         <input type="number" id="reviewer-count" name="reviewerCount" value="1" min="1" max="3" required>
                     </div>
-
+            
                     <div class="form-group">
                         <label for="primary-reviewer">Primary Reviewer:</label>
                         <select id="primary-reviewer" name="primaryReviewer" required>
@@ -197,9 +204,22 @@
                         <p id="reviewer-3-email"></p> <!-- Display email of Reviewer 3 -->
                     </div>
             
+                    <!-- Start Date (current time) -->
+                    <div class="form-group">
+                        <label for="start-date">Start Date:</label>
+                        <input type="datetime-local" id="start-date" name="startDate" value="" readonly>
+                    </div>
+            
+                    <!-- End Date (input by user) -->
+                    <div class="form-group">
+                        <label for="end-date">End Date:</label>
+                        <input type="datetime-local" id="end-date" name="endDate" required>
+                    </div>
+            
                     <button type="button" onclick="assignProtocol()">Assign Protocol</button>
                 </form>
             </section>
+            
             
             <section id="full-assign-section" class="section">
                 <h2>Full-Board Assign Protocol</h2>
@@ -264,8 +284,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <button id="uploadButton" onclick="submiticafFiles(), markReviewerCompleted()">Submit Files</button>
-
+                <button id="uploadButton" onclick="submiticafFiles()">Submit Files</button>
             </section>
             <!-- Download Files Section -->
             <section id="icaf-paf-download-section" class="section">
@@ -338,7 +357,7 @@
                      <!-- Dynamically populated reviewer status -->
                     </tbody>
                 </table>
-            
+            </section>
             
         </section>
     </main>
@@ -348,3 +367,4 @@
 
 </body>
 </html>
+
