@@ -48,48 +48,39 @@
                 <label for="proponent3">Proponent 3:</label>
                 <input type="text" id="proponent3" name="proponent3">
         
-                <label for="college">College:</label>
-                <input type="text" id="college" name="college" required>
-        
                 <label for="research-title">Research Title:</label>
                 <input type="text" id="research-title" name="research-title" required>
         
                 <label for="acad-year">Academic Year:</label>
-                <input type="text" id="acad-year" name="acad-year" value="24-25 1st SEM" readonly disabled>        
+                <input type="text" id="acad-year" name="acad-year"  readonly disabled>        
             </div>
+            <label for="college">College:</label>
+            <select id="college" name="college" required>
+                <option value="CICS">CICS</option>
+                <option value="COSC">COSC</option>
+                <option value="CLAC">CLAC</option>
+                <option value="CCJE">CCJE</option>
+                <option value="CBAA">CBAA</option>
+                <option value="CEAT">CEAT</option>
+                <option value="COED">COED</option>
+                <option value="CTHM">CTHM</option>
+            </select>
             
             <label for="category">Category:</label>
             <select id="category" name="category" >
                 <option value="undergraduate">Undergraduate</option>
                 <option value="graduate">Graduate</option>
             </select>
-            
-            <label for="review-type">Review Type:</label>
-            <select id="review-type" name="review-type" onchange="adjustForm()" required>
-                <option value="exempted">Exempted</option>
-                <option value="expedited">Expedited</option>
-                <option value="fullboard">Fullboard</option>
-            </select>
-        
-            <div id="experiment-type-section" style="display: none;">
-                <label for="experiment-type">Experiment Type:</label>
-                <select id="experiment-type" name="experiment-type">
-                    <option value="humans">Vulnerable Humans</option>
-                    <option value="plants">Plants and Animals</option>
-                </select>
-            </div>
-        
-            <div id="upload-section">
-                <!-- Dynamic file upload fields will be added here -->
-            </div>
         
             <button type="submit">Submit</button>
         </form>
         
     </section>
+
     
 
     <!-- Link to External JavaScript File -->
     <script src="js/script.js"></script>
 </body>
 </html>
+
