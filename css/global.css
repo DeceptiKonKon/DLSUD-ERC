@@ -1393,7 +1393,7 @@ select#account-type:focus {
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
-    background-color: white;
+    background-color: #666;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     font-family: Arial, sans-serif;
@@ -1403,7 +1403,7 @@ select#account-type:focus {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
-    color: #333;
+    color: white;
 }
 
 .dark-mode #assign-form select, #assign-form input {
@@ -1476,7 +1476,7 @@ select#account-type:focus {
 }
 
 .dark-mode #viewprotocol h1 {
-    color: #bbb; /* Lighter text for titles */
+    color: white; /* Lighter text for titles */
 }
 
 .dark-mode #viewprotocol .section {
@@ -1485,7 +1485,7 @@ select#account-type:focus {
 }
 
 .dark-mode #viewprotocol .section h2 {
-    color: #ccc; /* Lighter section headings */
+    color: #ffffff; /* Lighter section headings */
     border-bottom-color: #888; /* Adjust border color */
 }
 
@@ -1533,7 +1533,7 @@ select#account-type:focus {
 
 .dark-mode #comments-section h2, 
 .dark-mode #email-section h2 {
-    color: #ccc; /* Lighter headings */
+    color: white; /* Lighter headings */
 }
 
 /* Form Inputs in Dark Mode */
