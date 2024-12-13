@@ -150,6 +150,12 @@
                     <!-- Dynamically populated download files -->
                     </tbody>
                 </table>
+                <!-- 3 Buttons here -->
+                <div id="action-buttons" class="button-group">
+                    <button id="not-eligible-button" class="btn">Not Eligible</button>
+                    <button id="exempted-button" class="btn">Exempted</button>
+                    <button id="eligible-button" class="btn">Eligible</button>
+                </div>
             </section>
 
             
@@ -169,101 +175,126 @@
 
             </section>
 
-            <section id="assign-section" class="section">
-                <h2>Assign Protocol</h2>
-                <form id="assign-form">
-                    <div class="form-group">
-                        <label for="reviewer-count">Number of Reviewers:</label>
-                        <input type="number" id="reviewer-count" name="reviewerCount" value="1" min="1" max="3" required>
-                    </div>
+            <section id="assign-boards-section" class="section">
+                <h2>Assign Review Type</h2>
+
+<!-- Select Dropdown with Options for Review Type -->
+<div class="form-group">
+    <label for="review-selection">Select Review Type:</label>
+    <select id="review-selection" name="reviewSelection" required>
+        <option value="">Select Review Type</option>
+        <option value="Expedited">Expedited</option>
+        <option value="Full-board">Full-Board</option>
+    </select>
+</div>
+
+<!-- Normal Button -->
+<div class="button-container">
+    <button id="Review-button" class="btn">Apply Review</button>
+</div>
+
+<!-- Assign Protocol Section -->
+<section id="assign-section" class="section">
+    <h2>Assign Protocol</h2>
+    <form id="assign-form">
+        <div class="form-group">
+            <label for="reviewer-count">Number of Reviewers:</label>
+            <input type="number" id="reviewer-count" name="reviewerCount" value="1" min="1" max="3" required>
+        </div>
+
+        <div class="form-group">
+            <label for="primary-reviewer">Primary Reviewer:</label>
+            <select id="primary-reviewer" name="primaryReviewer" required>
+                <option value="">Select Primary Reviewer</option>
+                <!-- Options will be dynamically populated here -->
+            </select>
+            <p id="primary-reviewer-email"></p> <!-- Display email of Primary Reviewer -->
+        </div>
+
+        <div class="form-group">
+            <label for="reviewer-2">Reviewer 2:</label>
+            <select id="reviewer-2" name="reviewer2" required>
+                <option value="">Select Reviewer 2</option>
+                <!-- Options will be dynamically populated here -->
+            </select>
+            <p id="reviewer-2-email"></p> <!-- Display email of Reviewer 2 -->
+        </div>
+
+        <div class="form-group">
+            <label for="reviewer-3">Reviewer 3:</label>
+            <select id="reviewer-3" name="reviewer3" required>
+                <option value="">Select Reviewer 3</option>
+                <!-- Options will be dynamically populated here -->
+            </select>
+            <p id="reviewer-3-email"></p> <!-- Display email of Reviewer 3 -->
+        </div>
+
+        <!-- Start Date (current time) -->
+        <div class="form-group">
+            <label for="start-date">Start Date:</label>
+            <input type="datetime-local" id="start-date" name="startDate" value="" readonly>
+        </div>
+
+        <!-- End Date (input by user) -->
+        <div class="form-group">
+            <label for="end-date">End Date:</label>
+            <input type="datetime-local" id="end-date" name="endDate" required>
+        </div>
+
+        <button type="button" onclick="assignProtocol()">Assign Protocol</button>
+    </form>
+</section>
+
+<!-- Full-Board Assign Protocol Section -->
+<section id="full-assign-section" class="section">
+    <h2>Full-Board Assign Protocol</h2>
+    <form id="fassigning-form">            
+        <div class="form-group">
+            <label for="fprimary-reviewer">Primary Reviewer:</label>
+            <select id="fprimary-reviewer" name="fprimaryReviewer" required>
+                <option value="">Select Primary Reviewer</option>
+                <!-- Options will be dynamically populated here -->
+            </select>
+            <p id="fprimary-reviewer-email"></p> <!-- Display email of Primary Reviewer -->
+        </div>
+
+        <div class="form-group">
+            <label for="freviewer-2">Reviewer 2:</label>
+            <select id="freviewer-2" name="freviewer2" required>
+                <option value="">Select Reviewer 2</option>
+                <!-- Options will be dynamically populated here -->
+            </select>
+            <p id="freviewer-2-email"></p> <!-- Display email of Reviewer 2 -->
+        </div>
+        
+        <div class="form-group">
+            <label for="freviewer-3">Reviewer 3:</label>
+            <select id="freviewer-3" name="freviewer3" required>
+                <option value="">Select Reviewer 3</option>
+                <!-- Options will be dynamically populated here -->
+            </select>
+            <p id="freviewer-3-email"></p> <!-- Display email of Reviewer 3 -->
+        </div>
+
+        <div class="form-group">
+            <label for="layman-name">Layman Name:</label>
+            <input type="text" id="layman-name" name="laymanName" placeholder="Enter layman name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="layman-email">Layman Email:</label>
+            <input type="email" id="layman-email" name="laymanEmail" placeholder="Enter layman email" required>
+        </div>
+
+        <button type="button" onclick="fassignProtocol()">Assign Protocol</button>
+    </form>
+</section>
+
             
-                    <div class="form-group">
-                        <label for="primary-reviewer">Primary Reviewer:</label>
-                        <select id="primary-reviewer" name="primaryReviewer" required>
-                            <option value="">Select Primary Reviewer</option>
-                            <!-- Options will be dynamically populated here -->
-                        </select>
-                        <p id="primary-reviewer-email"></p> <!-- Display email of Primary Reviewer -->
-                    </div>
-            
-                    <div class="form-group">
-                        <label for="reviewer-2">Reviewer 2:</label>
-                        <select id="reviewer-2" name="reviewer2" required>
-                            <option value="">Select Reviewer 2</option>
-                            <!-- Options will be dynamically populated here -->
-                        </select>
-                        <p id="reviewer-2-email"></p> <!-- Display email of Reviewer 2 -->
-                    </div>
-            
-                    <div class="form-group">
-                        <label for="reviewer-3">Reviewer 3:</label>
-                        <select id="reviewer-3" name="reviewer3" required>
-                            <option value="">Select Reviewer 3</option>
-                            <!-- Options will be dynamically populated here -->
-                        </select>
-                        <p id="reviewer-3-email"></p> <!-- Display email of Reviewer 3 -->
-                    </div>
-            
-                    <!-- Start Date (current time) -->
-                    <div class="form-group">
-                        <label for="start-date">Start Date:</label>
-                        <input type="datetime-local" id="start-date" name="startDate" value="" readonly>
-                    </div>
-            
-                    <!-- End Date (input by user) -->
-                    <div class="form-group">
-                        <label for="end-date">End Date:</label>
-                        <input type="datetime-local" id="end-date" name="endDate" required>
-                    </div>
-            
-                    <button type="button" onclick="assignProtocol()">Assign Protocol</button>
-                </form>
             </section>
             
-            
-            <section id="full-assign-section" class="section">
-                <h2>Full-Board Assign Protocol</h2>
-                <form id="fassigning-form">            
-                    <div class="form-group">
-                        <label for="fprimary-reviewer">Primary Reviewer:</label>
-                        <select id="fprimary-reviewer" name="fprimaryReviewer" required>
-                            <option value="">Select Primary Reviewer</option>
-                            <!-- Options will be dynamically populated here -->
-                        </select>
-                        <p id="fprimary-reviewer-email"></p> <!-- Display email of Primary Reviewer -->
-                    </div>
-            
-                    <div class="form-group">
-                        <label for="freviewer-2">Reviewer 2:</label>
-                        <select id="freviewer-2" name="freviewer2" required>
-                            <option value="">Select Reviewer 2</option>
-                            <!-- Options will be dynamically populated here -->
-                        </select>
-                        <p id="freviewer-2-email"></p> <!-- Display email of Reviewer 2 -->
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="freviewer-3">Reviewer 3:</label>
-                        <select id="freviewer-3" name="freviewer3" required>
-                            <option value="">Select Reviewer 3</option>
-                            <!-- Options will be dynamically populated here -->
-                        </select>
-                        <p id="freviewer-3-email"></p> <!-- Display email of Reviewer 3 -->
-                    </div>
-            
-                    <div class="form-group">
-                        <label for="layman-name">Layman Name:</label>
-                        <input type="text" id="layman-name" name="laymanName" placeholder="Enter layman name" required>
-                    </div>
-            
-                    <div class="form-group">
-                        <label for="layman-email">Layman Email:</label>
-                        <input type="email" id="layman-email" name="laymanEmail" placeholder="Enter layman email" required>
-                    </div>
-            
-                    <button type="button" onclick="fassignProtocol()">Assign Protocol</button>
-                </form>
-            </section>
+
+
             <section id="submit-icaf-paf-section" class="section">
                 <h2>Upload Finished ICAF AND PAF Files</h2>
                 <table id="icaf-files-table">
@@ -286,6 +317,7 @@
                 </table>
                 <button id="uploadButton" onclick="submiticafFiles()">Submit Files</button>
             </section>
+
             <!-- Download Files Section -->
             <section id="icaf-paf-download-section" class="section">
                 <h2>Download ICAF/PAF Files</h2>
@@ -317,32 +349,6 @@
                 </table>
             </section>
             
-            <section id="forum-section" class="section">
-                <h1>FullBoard Forum</h1>
-                
-                <form id="forum-form">
-                    <div class="form-group">
-                        <label for="message">Enter Message:</label>
-                        <textarea id="message" name="message" rows="4" cols="50" placeholder="Write your message here..." required></textarea>
-                    </div>
-                    
-                    <button type="button" id="postMessageBtn">Post Message</button>
-                </form>
-                
-                <h2>Forum Comments</h2>
-                <table id="forumTable">
-                    <thead>
-                        <tr>
-                            <th>Forum Comment</th>
-                            <th>Time Stamp</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Messages will appear here -->
-                    </tbody>
-                </table>
-            </section>
-            
              <!-- Reviewer Status Section -->
             <section id="reviewer-status-section" class="section">
                 <h2>Reviewer Status</h2>
@@ -350,6 +356,7 @@
                         <thead>
                             <tr>
                                 <th>Reviewer Name</th>
+                                <th>Reviewer Email</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -367,4 +374,3 @@
 
 </body>
 </html>
-
