@@ -1,0 +1,1708 @@
+from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+import os
+import base64
+from flask import Flask, request, jsonify, session, make_response, send_file, abort
+from io import BytesIO
+import mysql.connector
+import bcrypt
+from flask_cors import CORS
+import datetime
+import smtplib
+import random  # Correct import for random module
+
+app = Flask(__name__)
+app.secret_key = 'your_secret_key_here'  # Necessary for session management
+CORS(app,  resources={r"/*": {"origins": "*"}}, supports_credentials=True)  # Allow all origins (or specify your frontend domain)
+
+# Static keys for AES-CBC and Fernet
+AES_CBC_KEY = b'your_32_byte_aes_key_here'  # 32 bytes for AES-CBC (e.g., 256-bit)
+FERNET_KEY = b'your_fernet_key_here'  # 32 bytes for Fernet (Fernet keys are base64-encoded)
+SALT_LENGTH = 16
+
+# MySQL connection details
+db_config = {
+    'user': 'dlsudercproject',  # Your MySQL username
+    'password': 'CompScieBCS42',  # Your MySQL password
+    'host': 'dlsudercproject.mysql.pythonanywhere-services.com',  # Your database host address
+    'database': 'dlsudercproject$decoy'  # Your database name
+}
+
+
+# Function to connect to MySQL
+def get_db_connection():
+    connection = mysql.connector.connect(**db_config)
+    return connection
+
+
+def to_send_email(recipient_email, subject, body):
+    try:
+        sender_email = "loyscedlsudercproject@gmail.com"
+        sender_password = "wanq hmib dsjn nbbv"  # App-specific password
+
+        # Prepare the email message
+        message = f"Subject: {subject}\n\n{body}"
+
+        # Send the email through Gmail's SMTP server
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, recipient_email, message)
+
+        return True
+    except Exception as e:
+        print(f"Error sending email: {e}")
+        return False
+
+# Function to get user by email
+def get_user_by_email(email):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)  # Ensure results are returned as dictionaries
+    query = "SELECT * FROM users WHERE email = %s"
+
+    try:
+        cursor.execute(query, (email,))
+        user = cursor.fetchone()  # Fetch one result
+        if user:
+            print(f"User found: {user}")  # Log user data to debug
+        else:
+            print(f"User not found for email: {email}")  # Log if user is not found
+        return user
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+        return None
+    finally:
+        cursor.close()
+        connection.close()
+
+def create_protocol(email):
+    """Function to create a new protocol with just the user's email."""
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor()
+    query = "INSERT INTO Protocol (email) VALUES (%s)"
+    cursor.execute(query, (email,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return "Protocol created successfully"
+
+def encrypt_text(text):
+    """Encrypts plain text using Fernet."""
+    fernet = Fernet(FERNET_KEY)
+    encrypted_text = fernet.encrypt(text.encode('utf-8'))
+    return encrypted_text
+
+def decrypt_text(encrypted_text):
+    """Decrypts the encrypted text using Fernet."""
+    fernet = Fernet(FERNET_KEY)
+    decrypted_text = fernet.decrypt(encrypted_text).decode('utf-8')
+    return decrypted_text
+
+def encrypt_file(file_data):
+    """Encrypts file data using AES-CBC."""
+    salt = os.urandom(SALT_LENGTH)  # Random salt for each encryption
+    key = PBKDF2HMAC(algorithm=algorithms.SHA256(), length=32, salt=salt, iterations=100000, backend=default_backend()).derive(AES_KEY)
+    iv = os.urandom(16)  # Generate a random IV
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+    encryptor = cipher.encryptor()
+
+    # Pad the file data to make it multiple of AES block size
+    padder = padding.PKCS7(128).padder()
+    padded_data = padder.update(file_data) + padder.finalize()
+
+    encrypted_file_data = encryptor.update(padded_data) + encryptor.finalize()
+    return salt + iv + encrypted_file_data  # Store salt and iv with encrypted data
+
+def decrypt_file(encrypted_file_data):
+    """Decrypts the encrypted file data using AES-CBC."""
+    salt = encrypted_file_data[:SALT_LENGTH]
+    iv = encrypted_file_data[SALT_LENGTH:SALT_LENGTH + 16]
+    encrypted_data = encrypted_file_data[SALT_LENGTH + 16:]
+
+    # Derive key using the salt
+    key = PBKDF2HMAC(algorithm=algorithms.SHA256(), length=32, salt=salt, iterations=100000, backend=default_backend()).derive(AES_KEY)
+
+    # Set up decryption
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+    decryptor = cipher.decryptor()
+
+    # Decrypt and unpad the data
+    decrypted_data = decryptor.update(encrypted_data) + decryptor.finalize()
+    unpadder = padding.PKCS7(128).unpadder()
+    unpadded_data = unpadder.update(decrypted_data) + unpadder.finalize()
+
+    return unpadded_data  # Return the original file content
+
+
+
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    # Extract data from the request
+    name = request.form.get('name')
+    email = request.form.get('email')
+    password = request.form.get('password')
+    account_type = request.form.get('account-type')
+
+    # Check if any required field is missing
+    if not name or not email or not password or not account_type:
+        return jsonify({"error": "Missing required fields."}), 400
+
+    # Hash the password
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+    # Insert into the database
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    query = """
+    INSERT INTO users (name, email, password, account_type)
+    VALUES (%s, %s, %s, %s)
+    """
+    try:
+        cursor.execute(query, (name, email, hashed_password, account_type))
+        connection.commit()
+        return jsonify({"message": "Sign up successful!"}), 200
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Database Error: {err}"}), 500
+    finally:
+        cursor.close()
+        connection.close()
+
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    # Retrieve the user by email
+    user = get_user_by_email(email)
+
+    if user:
+        hashed_password = user['password']
+
+        # Check if the password matches
+        if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
+
+            # Check if email is confirmed
+            if not user['confirmation_status']:
+                return jsonify({"message": "Please confirm your email.", "redirect": "confirmation.html"}), 403
+            else:
+                # Store user info in session
+                session['user_email'] = email
+                session['account_type'] = user['account_type']  # Store account-type in session
+
+                # Return the email and account-type to the frontend
+                return jsonify({
+                    "message": "Login successful!",
+                    "redirect": "dashboard.html",
+                    "userEmail": email,
+                    "userName": user['name'],
+                    "accountType": user['account_type']
+                }), 200
+        else:
+            return jsonify({"error": "Invalid email or password"}), 400
+    else:
+        return jsonify({"error": "User not found"}), 404
+
+
+
+def send_email(recipient_email, confirmation_code):
+    try:
+        sender_email = "loyscedlsudercproject@gmail.com"
+        sender_password = "wanq hmib dsjn nbbv"  # This is your app-specific password
+
+        subject = "Your Confirmation Code"
+        body = f"Your confirmation code is: {confirmation_code}"
+        message = f"Subject: {subject}\n\n{body}"
+
+        # Send the email through Gmail's SMTP server
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, recipient_email, message)
+
+        return True
+    except Exception as e:
+        print(f"Error sending email: {e}")
+        return False
+
+# API endpoint to handle sending the confirmation code
+@app.route('/send-code', methods=['POST'])
+def send_code():
+    data = request.get_json()
+    email = data.get('email')
+
+    if not email:
+        return jsonify({"error": "Email is required"}), 400
+
+    # Generate a random 6-digit confirmation code
+    confirmation_code = random.randint(100000, 999999)
+
+    # Store the confirmation code in session
+    session['confirmation_code'] = confirmation_code
+
+    # Send the email
+    if send_email(email, confirmation_code):
+        return jsonify({"message": "Code sent successfully", "confirmationCode": confirmation_code})
+    else:
+        return jsonify({"error": "Failed to send email. Please try again later."}), 500
+
+
+@app.route('/verify-code', methods=['POST'])
+def verify_code():
+    data = request.get_json()
+    email = data.get('email')
+
+    if not email:
+        return jsonify({"error": "Email is required."}), 400
+
+    # Update confirmation status in the database based on the email
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    query = "UPDATE users SET confirmation_status = TRUE WHERE email = %s"
+
+    try:
+        cursor.execute(query, (email,))
+        connection.commit()
+        return jsonify({"message": "Email confirmed! Redirecting to Log in page."}), 200
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Error: {err}"}), 500
+    finally:
+        cursor.close()
+        connection.close()
+
+
+@app.route('/get-user-role', methods=['GET'])
+def get_user_role():
+    email = request.args.get('email')  # Get email from the query parameters
+
+    if not email:
+        return jsonify({"error": "Email is required"}), 400
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        # Query to fetch the role based on email
+        query = "SELECT role FROM users WHERE email = %s"
+        cursor.execute(query, (email,))
+
+        # Fetch the result
+        user = cursor.fetchone()
+
+        if user:
+            return jsonify({"role": user['role']}), 200  # Return the user's role
+        else:
+            return jsonify({"error": "User not found"}), 404
+
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if connection:
+            connection.close()
+
+@app.route('/change_password', methods=['POST'])
+def change_password():
+    data = request.get_json()
+    email = data.get('email')
+    current_password = data.get('currentPassword')
+    new_password = data.get('newPassword')
+
+    if not email or not current_password or not new_password:
+        return jsonify({"error": "All fields are required."}), 400
+
+    # Establish a database connection
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+
+        # Fetch user by email
+        cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+        user = cursor.fetchone()
+
+        if not user:
+            return jsonify({"error": "User not found."}), 404
+
+        # Verify the current password
+        if not bcrypt.checkpw(current_password.encode('utf-8'), user['password'].encode('utf-8')):
+            return jsonify({"error": "Current password is incorrect."}), 400
+
+        # Hash the new password
+        hashed_new_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+
+        # Update the password in the database
+        cursor.execute("UPDATE users SET password = %s WHERE email = %s", (hashed_new_password, email))
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        return jsonify({"message": "Password updated successfully!"}), 200
+
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Database error: {err}"}), 500
+
+@app.route('/get_academic_years', methods=['GET'])
+def get_academic_years():
+    try:
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT AcadYear FROM AcademicYear WHERE SetStatus = TRUE")
+        result = cursor.fetchall()
+        return jsonify({'status': 'success', 'academic_years': result})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
+    finally:
+        cursor.close()
+        connection.close
+
+@app.route('/submit-protocol-fields', methods=['POST'])
+def submit_protocol_fields():
+    try:
+        # Extract protocol data from form
+        research_title = request.form['research-title']
+        proponent1 = request.form['proponent1']
+        proponent2 = request.form.get('proponent2', None)
+        proponent3 = request.form.get('proponent3', None)
+        college = request.form['college']
+        acad_year = request.form['acad-year']
+        review_type = request.form['review-type']
+        email = request.form['user-email']  # Get email from form data
+        category = request.form.get('category')
+        experiment_type = request.form.get('experiment-type', None)
+        comments = " "
+
+        # Connect to the database and insert protocol fields
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        cursor.execute("""
+            INSERT INTO Protocol (
+                ResearchTitle, Email, College, ReviewType, Proponent1, Proponent2, Proponent3,
+                AcadYear, Category, Comments, ExperimentType
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            research_title, email, college, review_type, proponent1, proponent2, proponent3,
+            acad_year, category, comments, experiment_type
+        ))
+
+        # Get the protocol ID for file upload
+        protocol_id = cursor.lastrowid
+
+        # Commit the transaction and close
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        return jsonify({'protocol_id': protocol_id}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+
+
+@app.route('/get-protocols', methods=['GET'])
+def get_protocols():
+    try:
+        # Get the email from the query parameters
+        user_email = request.args.get('email')
+
+        if not user_email:
+            return jsonify({'status': 'error', 'message': 'Email parameter is missing'}), 400
+
+        # Connect to the MySQL database
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # Query to get protocols for the provided email
+        query = """
+            SELECT Protoid, ResearchTitle, EthicsStatus
+            FROM Protocol
+            WHERE Email = %s
+        """
+        cursor.execute(query, (user_email,))
+
+        # Fetch all protocols for the user
+        protocols = cursor.fetchall()
+
+        # Format the response
+        protocols_list = []
+        for protocol in protocols:
+            protocols_list.append({
+                'Protoid': protocol[0],
+                'ResearchTitle': protocol[1],
+                'EthicsStatus': protocol[2] if protocol[2] else 'No Ethics Status Yet',
+                'ViewProtocolLink': f'/view-protocol/{protocol[0]}'
+            })
+
+        # Return the formatted protocols
+        return jsonify({'status': 'success', 'protocols': protocols_list})
+
+    except mysql.connector.Error as e:
+        # Log and return database-specific errors
+        print(f"Database Error: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'Database error occurred', 'details': str(e)}), 500
+
+    except Exception as e:
+        # Log and return general errors
+        print(f"Error: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'An error occurred', 'details': str(e)}), 500
+
+    finally:
+        # Ensure the cursor and connection are closed
+        if 'cursor' in locals() and cursor is not None:
+            cursor.close()
+        if 'connection' in locals() and connection.is_connected():
+            connection.close()
+
+@app.route('/get-protocol-details', methods=['GET'])
+def get_protocol_details():
+    # Retrieve the Protoid from request arguments
+    protoid = request.args.get('protoid')
+    if not protoid:
+        return jsonify({'status': 'error', 'message': 'Protoid is required'}), 400
+
+    try:
+        # Establish database connection
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # SQL query to fetch protocol details
+        query = """
+            SELECT ResearchTitle, Email, College, Category, ReviewType, Proponent1, Proponent2, Proponent3,
+                   Comments, AcadYear, EthicsStatus, ExperimentType
+            FROM Protocol
+            WHERE Protoid = %s
+        """
+        cursor.execute(query, (protoid,))
+        protocol_data = cursor.fetchone()
+
+        if protocol_data:
+            # Construct the protocol dictionary
+            protocol = {
+                'ResearchTitle': protocol_data[0],
+                'Email': protocol_data[1],
+                'College': protocol_data[2],
+                'Category': protocol_data[3],
+                'ReviewType': protocol_data[4],
+                'Proponent1': protocol_data[5],
+                'Proponent2': protocol_data[6] if protocol_data[6] else 'N/A',
+                'Proponent3': protocol_data[7] if protocol_data[7] else 'N/A',
+                'Comments': protocol_data[8] if protocol_data[8] else 'No comments',
+                'AcadYear': protocol_data[9],
+                'EthicsStatus': protocol_data[10],
+                'ExperimentType': protocol_data[11] if protocol_data[11] else 'Not specified',  # Fetch Experiment Type
+            }
+            return jsonify({'status': 'success', 'protocol': protocol}), 200
+        else:
+            # Handle case where the protocol is not found
+            return jsonify({'status': 'error', 'message': 'Protocol not found'}), 404
+
+    except mysql.connector.Error as e:
+        # Database error handling
+        return jsonify({'status': 'error', 'message': f'Database error: {e}'}), 500
+
+    except Exception as e:
+        # General error handling
+        return jsonify({'status': 'error', 'message': f'Unexpected error: {e}'}), 500
+
+    finally:
+        # Ensure cursor and connection are closed
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+
+
+
+
+@app.route('/upload-files', methods=['POST'])
+def upload_files():
+    # Retrieve protoid from the form
+    protoid = request.form.get('protoid')
+    if not protoid:
+        return jsonify({'status': 'error', 'message': 'Protoid is missing.'}), 400
+
+    try:
+        # Establish a database connection
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # Fetch the experiment_type and review_type from the database using protoid
+        cursor.execute("SELECT ExperimentType, ReviewType FROM Protocol WHERE Protoid = %s", (protoid,))
+        result = cursor.fetchone()
+
+        if not result:
+            return jsonify({'status': 'error', 'message': 'Protocol not found.'}), 404
+
+        experiment_type, review_type = result  # Extract experiment and review types from the result
+
+        # Define file types based on experiment and review types
+        FILE_TYPES = {
+            'humans': {
+                'exempted': ['Accomplished checklist form', 'Revised Research Proposal'],
+                'expedited': ['Accomplished checklist form', 'Informed Consent Assessment Form (ICAF)',
+                              'Protocol Assessment Form', 'Informed Consent (English Version)',
+                              'Informed Consent (Filipino Version)', 'Revised Research Proposal',
+                              'Validated Questionnaire', 'Advertisement of Recruitment process',
+                              'Link/Site of Data Sources (if data mining)', 'Official Receipt'],
+                'fullboard': ['Accomplished checklist form', 'Informed Consent Assessment Form (ICAF)',
+                              'Protocol Assessment Form', 'Informed Consent (English Version)',
+                              'Informed Consent (Filipino Version)', 'Revised Research Proposal',
+                              'Validated Questionnaire', 'Advertisement of Recruitment process',
+                              'Link/Site of Data Sources (if data mining)', 'Official Receipt']
+            },
+            'plants': {
+                'exempted': ['Accomplished checklist form', 'Revised Research Proposal'],
+                'expedited': ['Accomplished checklist form', 'Revised Research Proposal', 'BSD Form'],
+                'fullboard': ['Accomplished checklist form', 'Revised Research Proposal', 'BSD Form']
+            }
+        }
+
+        # Get the file types corresponding to the experiment and review types
+        experiment_file_types = FILE_TYPES.get(experiment_type, {})
+        file_types = experiment_file_types.get(review_type, [])
+
+        # Get the uploaded files
+        files = request.files.getlist('files[]')
+
+        # Check and log the counts of files and file types
+        print("Number of Files:", len(files))
+        print("Number of File Types:", len(file_types))
+
+        # If the counts don't match, return an error
+        if len(files) != len(file_types):
+            response_data = {
+                'status': 'error',
+                'message': f'Mismatch between files and file types. Files: {len(files)}, File Types: {len(file_types)}'
+            }
+            return jsonify(response_data), 400
+
+        # Insert files and their file types into the database
+        for i, file in enumerate(files):
+            file_type = file_types[i]  # Get the corresponding file type
+            filename = file.filename
+            file_data = file.read()
+
+            cursor.execute(
+                "INSERT INTO Files (Protoid, Filename, FileCategory, FileData) VALUES (%s, %s, %s, %s)",
+                (protoid, filename, file_type, file_data)
+            )
+
+        # Update EthicsStatus in the Protocol table to "Checking"
+        cursor.execute(
+            "UPDATE Protocol SET EthicsStatus = %s WHERE Protoid = %s",
+            ('Checking', protoid)
+        )
+
+        # Commit changes to the database
+        connection.commit()
+
+        response_data = {
+            'status': 'success',
+            'message': f'Files uploaded successfully. Files: {len(files)}, File Types: {len(file_types)}, EthicsStatus updated to Checking.'
+        }
+        return jsonify(response_data)
+
+    except mysql.connector.Error as e:
+        response_data = {
+            'status': 'error',
+            'message': f'Database error: {str(e)}'
+        }
+        return jsonify(response_data), 500
+
+    except Exception as e:
+        response_data = {
+            'status': 'error',
+            'message': f'Unexpected error: {str(e)}'
+        }
+        return jsonify(response_data), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+
+@app.route('/download-file/<int:file_id>', methods=['GET'])
+def download_file(file_id):
+    try:
+        # Establish a database connection
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # Fetch the filename and file data for the given file_id
+        cursor.execute("SELECT Filename, FileData FROM Files WHERE FileId = %s", (file_id,))
+        file_record = cursor.fetchone()
+    except mysql.connector.Error as e:
+        return jsonify({'status': 'error', 'message': f'Database error: {str(e)}'}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+    if file_record:
+        filename, file_data = file_record
+        return send_file(
+            BytesIO(file_data),  # Convert binary data to a BytesIO stream
+            download_name=filename,  # Set the filename for the download
+            as_attachment=True  # Ensure the file is served as an attachment
+        )
+    else:
+        # File not found
+        return abort(404, description="File not found.")
+
+@app.route('/get-files/<int:protoid>', methods=['GET'])
+def get_files(protoid):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Fetch FileCategory and FileID from the Files table
+        cursor.execute("SELECT FileID, FileCategory FROM Files WHERE Protoid = %s", (protoid,))
+        files = cursor.fetchall()
+
+        # Format the response
+        files_data = [{'FileID': file[0], 'FileCategory': file[1]} for file in files]
+
+        return jsonify({'status': 'success', 'data': files_data})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
+
+@app.route('/forgot_password', methods=['POST'])
+def forgot_password():
+    data = request.get_json()
+    email = data.get('email')
+    new_password = data.get('newPassword')
+
+    # Validate the input data
+    if not email or not new_password:
+        return jsonify({"error": "Email and new password are required."}), 400
+
+    # Establish a database connection
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+
+        # Check if the email exists in the database
+        cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+        user = cursor.fetchone()
+
+        if not user:
+            return jsonify({"error": "Email not found."}), 404
+
+        # Hash the new password
+        hashed_new_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+
+        # Update the password in the database
+        cursor.execute("UPDATE users SET password = %s WHERE email = %s", (hashed_new_password, email))
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        return jsonify({"message": "Password updated successfully!"}), 200
+
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Database error: {err}"}), 500
+
+@app.route('/fetch-student-protocols', methods=['GET'])
+def fetch_student_protocols():
+    try:
+        # Connect to the MySQL database
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # Query to get all protocols
+        query = """
+            SELECT Protoid, ResearchTitle, EthicsStatus
+            FROM Protocol
+            WHERE EthicsStatus IN ('Checking', 'Assigning', 'Reviewing', 'Evaluating', 'Completed')
+        """
+        cursor.execute(query)
+
+        # Fetch all protocols
+        protocols = cursor.fetchall()
+
+        # Format the response
+        protocols_list = []
+        for protocol in protocols:
+            protocols_list.append({
+                'Protoid': protocol[0],
+                'ResearchTitle': protocol[1],
+                'EthicsStatus': protocol[2] if protocol[2] else 'No Ethics Status Yet',
+                'ViewProtocolLink': f'/view-protocol/{protocol[0]}'
+            })
+
+        # Return the formatted protocols
+        return jsonify({'status': 'success', 'protocols': protocols_list})
+
+    except mysql.connector.Error as e:
+        # Log and return database-specific errors
+        print(f"Database Error: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'Database error occurred', 'details': str(e)}), 500
+
+    except Exception as e:
+        # Log and return general errors
+        print(f"Error: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'An error occurred', 'details': str(e)}), 500
+
+    finally:
+        # Ensure the cursor and connection are closed
+        if 'cursor' in locals() and cursor is not None:
+            cursor.close()
+        if 'connection' in locals() and connection.is_connected():
+            connection.close()
+
+@app.route('/fetch-secretary-protocols', methods=['GET'])
+def fetch_secretary_protocols():
+    try:
+        # Connect to the MySQL database
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # Query to get all protocols
+        query = """
+            SELECT Protoid, ResearchTitle, EthicsStatus
+            FROM Protocol
+            WHERE EthicsStatus IN ('Checking', 'Assigning', 'Reviewing', 'Evaluating')
+        """
+        cursor.execute(query)
+
+        # Fetch all protocols
+        protocols = cursor.fetchall()
+
+        # Format the response
+        protocols_list = []
+        for protocol in protocols:
+            protocols_list.append({
+                'Protoid': protocol[0],
+                'ResearchTitle': protocol[1],
+                'EthicsStatus': protocol[2] if protocol[2] else 'No Ethics Status Yet',
+                'ViewProtocolLink': f'/view-protocol/{protocol[0]}'
+            })
+
+        # Return the formatted protocols
+        return jsonify({'status': 'success', 'protocols': protocols_list})
+
+    except mysql.connector.Error as e:
+        # Log and return database-specific errors
+        print(f"Database Error: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'Database error occurred', 'details': str(e)}), 500
+
+    except Exception as e:
+        # Log and return general errors
+        print(f"Error: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'An error occurred', 'details': str(e)}), 500
+
+    finally:
+        # Ensure the cursor and connection are closed
+        if 'cursor' in locals() and cursor is not None:
+            cursor.close()
+        if 'connection' in locals() and connection.is_connected():
+            connection.close()
+
+@app.route('/fetch-chair-protocols', methods=['GET'])
+def fetch_chair_protocols():
+    try:
+        # Connect to the MySQL database
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # Query to get all protocols where EthicsStatus is 'Assigning'
+        query = """
+            SELECT Protoid, ResearchTitle, EthicsStatus
+            FROM Protocol
+            WHERE EthicsStatus IN ('Assigning', 'Reviewing', 'Evaluating')
+        """
+        cursor.execute(query)
+
+        # Fetch all protocols
+        protocols = cursor.fetchall()
+
+        # Format the response
+        protocols_list = []
+        for protocol in protocols:
+            protocols_list.append({
+                'Protoid': protocol[0],
+                'ResearchTitle': protocol[1],
+                'EthicsStatus': protocol[2] if protocol[2] else 'No Ethics Status Yet',
+                'ViewProtocolLink': f'/view-protocol/{protocol[0]}'
+            })
+
+        # Return the formatted protocols
+        return jsonify({'status': 'success', 'protocols': protocols_list})
+
+    except mysql.connector.Error as e:
+        # Log and return database-specific errors
+        print(f"Database Error: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'Database error occurred', 'details': str(e)}), 500
+
+    except Exception as e:
+        # Log and return general errors
+        print(f"Error: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'An error occurred', 'details': str(e)}), 500
+
+    finally:
+        # Ensure the cursor and connection are closed
+        if 'cursor' in locals() and cursor is not None:
+            cursor.close()
+        if 'connection' in locals() and connection.is_connected():
+            connection.close()
+
+@app.route('/fetch-reviewer-protocol', methods=['GET'])
+def fetch_reviewer_protocol():
+    # Get the reviewer email from the request (adjust if needed)
+    reviewer_email = request.args.get('reviewer_email')
+    if not reviewer_email:
+        return jsonify({'status': 'error', 'message': 'Reviewer email is required.'}), 400
+
+    try:
+        # Connect to the MySQL database
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # Query to fetch Protoid, ResearchTitle, and the status for the specific reviewer
+        query = """
+            SELECT
+                p.Protoid,
+                p.ResearchTitle,
+                r.Status
+            FROM
+                Protocol p
+            INNER JOIN
+                Reviewer r ON p.Protoid = r.Protoid
+            WHERE
+                r.ReviewerEmail = %s
+        """
+        cursor.execute(query, (reviewer_email,))
+
+        # Fetch the results
+        protocols = cursor.fetchall()
+
+        # Format the response
+        protocols_list = []
+        for protocol in protocols:
+            protocols_list.append({
+                'Protoid': protocol[0],
+                'ResearchTitle': protocol[1],
+                'ReviewerStatus': protocol[2] if protocol[2] else 'No Status Assigned',
+                'ViewProtocolLink': f'/view-protocol/{protocol[0]}'
+            })
+
+        # Return the formatted protocols
+        return jsonify({'status': 'success', 'protocols': protocols_list})
+
+    except mysql.connector.Error as e:
+        # Log and return database-specific errors
+        print(f"Database Error: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'Database error occurred', 'details': str(e)}), 500
+
+    except Exception as e:
+        # Log and return general errors
+        print(f"Error: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'An error occurred', 'details': str(e)}), 500
+
+    finally:
+        # Ensure the cursor and connection are closed
+        if 'cursor' in locals() and cursor is not None:
+            cursor.close()
+        if 'connection' in locals() and connection.is_connected():
+            connection.close()
+
+
+@app.route('/to-send-email', methods=['POST'])
+def to_send_email_endpoint():
+    data = request.get_json()
+    recipient_email = data.get('recipient_email')
+    subject = data.get('subject')
+    body = data.get('body')
+
+    # Validate the required fields
+    if not recipient_email or not subject or not body:
+        return jsonify({"error": "Recipient email, subject, and body are required"}), 400
+
+    # Send the email
+    if to_send_email(recipient_email, subject, body):
+        return jsonify({"message": "Email sent successfully"})
+    else:
+        return jsonify({"error": "Failed to send email. Please try again later."}), 500
+
+
+
+@app.route('/update-file/<int:file_id>', methods=['POST'])
+def update_file(file_id):
+    try:
+        # Ensure a file is uploaded
+        if 'file' not in request.files:
+            return jsonify({'status': 'error', 'message': 'No file uploaded'}), 400
+
+        uploaded_file = request.files['file']  # Get the uploaded file
+        filename = uploaded_file.filename
+        file_data = uploaded_file.read()  # Read file contents as binary data
+
+        # Ensure the file is valid
+        if not filename or not file_data:
+            return jsonify({'status': 'error', 'message': 'Invalid file'}), 400
+
+        # Establish a database connection
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # Update the file in the database
+        query = """
+            UPDATE Files
+            SET Filename = %s, FileData = %s
+            WHERE FileID = %s
+        """
+        cursor.execute(query, (filename, file_data, file_id))
+        connection.commit()
+
+        if cursor.rowcount == 0:
+            return jsonify({'status': 'error', 'message': 'File not found or not updated'}), 404
+
+        return jsonify({'status': 'success', 'message': 'File updated successfully'})
+
+    except mysql.connector.Error as e:
+        return jsonify({'status': 'error', 'message': f'Database error: {str(e)}'}), 500
+
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': f'An error occurred: {str(e)}'}), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+@app.route('/delete_protocol', methods=['POST'])
+def delete_protocol():
+    protoid = request.json.get('protoid')
+    if not protoid:
+        return jsonify({'error': 'Protocol ID is required'}), 400
+
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        # Delete from Protocol (cascades to Reviewer and Reviewerfiles)
+        cursor.execute("DELETE FROM Protocol WHERE Protoid = %s", (protoid,))
+
+        # Explicitly delete associated files (not covered by ON DELETE CASCADE)
+        cursor.execute("DELETE FROM Files WHERE Protoid = %s", (protoid,))
+
+        conn.commit()
+        return jsonify({'message': 'Protocol and associated records deleted successfully'}), 200
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
+
+
+@app.route('/assign', methods=['POST'])
+def assign():
+    try:
+        # Get Protoid from the request body
+        protoid = request.form.get('protoid')
+
+        if not protoid:
+            return jsonify({'status': 'error', 'message': 'Protoid is required'}), 400
+
+        # Connect to the database
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # Update the EthicsStatus in the Protocol table
+        cursor.execute(
+            "UPDATE Protocol SET EthicsStatus = %s WHERE Protoid = %s",
+            ('Assigning', protoid)
+        )
+
+        # Commit the changes
+        connection.commit()
+
+        # Check if any row was updated
+        if cursor.rowcount > 0:
+            return jsonify({'status': 'success', 'message': f'Ethics Status updated to "Assigning" for Protoid {protoid}'}), 200
+        else:
+            return jsonify({'status': 'error', 'message': 'No matching Protoid found'}), 404
+
+    except mysql.connector.Error as e:
+        return jsonify({'status': 'error', 'message': f'Database error: {str(e)}'}), 500
+
+    finally:
+        # Close the database connection
+        if 'cursor' in locals():
+            cursor.close()
+        if 'connection' in locals() and connection.is_connected():
+            connection.close()
+
+@app.route('/reviewing', methods=['POST'])
+def reviewing():
+    try:
+        # Get Protoid from the request body
+        protoid = request.form.get('protoid')
+
+        if not protoid:
+            return jsonify({'status': 'error', 'message': 'Protoid is required'}), 400
+
+        # Connect to the database
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # Update the EthicsStatus in the Protocol table
+        cursor.execute(
+            "UPDATE Protocol SET EthicsStatus = %s WHERE Protoid = %s",
+            ('Reviewing', protoid)
+        )
+
+        # Commit the changes
+        connection.commit()
+
+        # Check if any row was updated
+        if cursor.rowcount > 0:
+            return jsonify({'status': 'success', 'message': f'Ethics Status updated to "Reviewing" for Protoid {protoid}'}), 200
+        else:
+            return jsonify({'status': 'error', 'message': 'No matching Protoid found'}), 404
+
+    except mysql.connector.Error as e:
+        return jsonify({'status': 'error', 'message': f'Database error: {str(e)}'}), 500
+
+    finally:
+        # Close the database connection
+        if 'cursor' in locals():
+            cursor.close()
+        if 'connection' in locals() and connection.is_connected():
+            connection.close()
+
+@app.route('/evaluating', methods=['POST'])
+def evaluating():
+    try:
+        # Get Protoid from the request body
+        protoid = request.form.get('protoid')
+
+        if not protoid:
+            return jsonify({'status': 'error', 'message': 'Protoid is required'}), 400
+
+        # Connect to the database
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # Update the EthicsStatus in the Protocol table
+        cursor.execute(
+            "UPDATE Protocol SET EthicsStatus = %s WHERE Protoid = %s",
+            ('Evaluating', protoid)
+        )
+
+        # Commit the changes
+        connection.commit()
+
+        # Check if any row was updated
+        if cursor.rowcount > 0:
+            return jsonify({'status': 'success', 'message': f'Ethics Status updated to "Assigning" for Protoid {protoid}'}), 200
+        else:
+            return jsonify({'status': 'error', 'message': 'No matching Protoid found'}), 404
+
+    except mysql.connector.Error as e:
+        return jsonify({'status': 'error', 'message': f'Database error: {str(e)}'}), 500
+
+    finally:
+        # Close the database connection
+        if 'cursor' in locals():
+            cursor.close()
+        if 'connection' in locals() and connection.is_connected():
+            connection.close()
+
+@app.route('/completed', methods=['POST'])
+def completed():
+    try:
+        # Get Protoid from the request body
+        protoid = request.form.get('protoid')
+
+        if not protoid:
+            return jsonify({'status': 'error', 'message': 'Protoid is required'}), 400
+
+        # Connect to the database
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # Update the EthicsStatus in the Protocol table
+        cursor.execute(
+            "UPDATE Protocol SET EthicsStatus = %s WHERE Protoid = %s",
+            ('Completed', protoid)
+        )
+
+        # Commit the changes
+        connection.commit()
+
+        # Check if any row was updated
+        if cursor.rowcount > 0:
+            return jsonify({'status': 'success', 'message': f'Ethics Status updated to "Completed" for Protoid {protoid}'}), 200
+        else:
+            return jsonify({'status': 'error', 'message': 'No matching Protoid found'}), 404
+
+    except mysql.connector.Error as e:
+        return jsonify({'status': 'error', 'message': f'Database error: {str(e)}'}), 500
+
+    finally:
+        # Close the database connection
+        if 'cursor' in locals():
+            cursor.close()
+        if 'connection' in locals() and connection.is_connected():
+            connection.close()
+
+@app.route('/reviewer-completed', methods=['POST'])
+def reviewer_completed():
+    try:
+        # Get data from the request body
+        protoid = request.form.get('protoid')
+        reviewer_email = request.form.get('reviewerEmail')
+
+        if not protoid or not reviewer_email:
+            return jsonify({'status': 'error', 'message': 'Protoid and ReviewerEmail are required'}), 400
+
+        # Connect to the database
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # Update the Status in the Reviewer table
+        cursor.execute(
+            "UPDATE Reviewer SET Status = %s WHERE Protoid = %s AND ReviewerEmail = %s",
+            ('Completed', protoid, reviewer_email)
+        )
+
+        # Commit the changes
+        connection.commit()
+
+        # Check if any row was updated
+        if cursor.rowcount > 0:
+            return jsonify({'status': 'success', 'message': f'Status updated to "Completed" for Reviewer {reviewer_email} and Protoid {protoid}'}), 200
+        else:
+            return jsonify({'status': 'error', 'message': 'No matching Reviewer found for the given Protoid and ReviewerEmail'}), 404
+
+    except mysql.connector.Error as e:
+        return jsonify({'status': 'error', 'message': f'Database error: {str(e)}'}), 500
+
+    finally:
+        # Close the database connection
+        if 'cursor' in locals():
+            cursor.close()
+        if 'connection' in locals() and connection.is_connected():
+            connection.close()
+
+@app.route('/get-reviewers', methods=['GET'])
+def get_reviewers():
+    try:
+        # Establish a database connection
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # Fetch users with account_type as 'ethics-reviewer' from the database
+        cursor.execute("SELECT name, email FROM users WHERE account_type = 'ethics-reviewer'")
+        reviewers = cursor.fetchall()
+
+        # If reviewers are found, return them in the response
+        if reviewers:
+            reviewer_data = [{'name': reviewer[0], 'email': reviewer[1]} for reviewer in reviewers]  # Create a list of dicts with name and email
+            return jsonify({'status': 'success', 'reviewers': reviewer_data})
+        else:
+            return jsonify({'status': 'error', 'message': 'No reviewers found.'}), 404
+
+    except mysql.connector.Error as e:
+        return jsonify({'status': 'error', 'message': f'Database error: {str(e)}'}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+@app.route('/assign-protocol-reviewers', methods=['POST'])
+def assign_protocol_reviewers():
+    try:
+        data = request.get_json()
+
+        protoid = data['protoid']
+        reviewers = data['reviewers']
+
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        for reviewer in reviewers:
+            email = reviewer['email']
+            is_primary = reviewer['isPrimary']
+            paid_amount = reviewer['paidAmount']
+
+            # Fetch the reviewer name based on email
+            cursor.execute("SELECT name FROM users WHERE email = %s", (email,))
+            result = cursor.fetchone()
+
+            if not result:
+                return jsonify({'status': 'error', 'message': f'Reviewer with email {email} not found'}), 404
+
+            reviewer_name = result[0]
+
+            # Insert into Reviewer table
+            cursor.execute("""
+                INSERT INTO Reviewer (Protoid, ReviewerName, ReviewerEmail, PaidAmount, IsPrimaryReviewer)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (protoid, reviewer_name, email, paid_amount, is_primary))
+
+        connection.commit()
+        return jsonify({'status': 'success', 'message': 'Reviewers assigned successfully'})
+
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
+    finally:
+        connection.close()
+
+# Helper function to get reviewer name by email
+def get_reviewer_name_by_email(email):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT ReviewerName FROM Reviewer WHERE ReviewerEmail = %s", (email,))
+    result = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    return result[0] if result else "Unknown Reviewer"
+
+
+@app.route('/assign-fullboard-protocol-reviewers', methods=['POST'])
+def assign_fullboard_protocol_reviewers():
+    try:
+        data = request.get_json()
+
+        protoid = data['protoid']
+        reviewers = data['reviewers']
+        full_board_details = data['fullBoardDetails']
+
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Insert reviewers
+        for reviewer in reviewers:
+            email = reviewer['email']
+            is_primary = reviewer['isPrimary']
+            paid_amount = reviewer['paidAmount']
+
+            # Fetch reviewer name based on email
+            cursor.execute("SELECT ReviewerName FROM Reviewer WHERE ReviewerEmail = %s", (email,))
+            result = cursor.fetchone()
+
+            if not result:
+                return jsonify({'status': 'error', 'message': f'Reviewer with email {email} not found'}), 404
+
+            reviewer_name = result[0]
+
+            # Insert into Reviewer table
+            cursor.execute("""
+                INSERT INTO Reviewer (Protoid, ReviewerName, ReviewerEmail, PaidAmount, IsPrimaryReviewer)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (protoid, reviewer_name, email, paid_amount, is_primary))
+
+        # Insert full board details
+        cursor.execute("""
+            INSERT INTO FullBoardReviewerDetails (Protoid, ERCChairName, ERCChairEmail, ERCChairPaidAmount,
+            LaymanName, LaymanEmail, LaymanPaidAmount)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (protoid, full_board_details['ercChairName'], full_board_details['ercChairEmail'],
+              full_board_details['ercChairPaidAmount'], full_board_details['laymanName'],
+              full_board_details['laymanEmail'], full_board_details['laymanPaidAmount']))
+
+        connection.commit()
+        return jsonify({'status': 'success', 'message': 'Reviewers and full board assigned successfully'})
+
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
+    finally:
+        connection.close()
+
+
+
+
+
+@app.route('/post_message', methods=['POST'])
+def post_message():
+    # Get the message and protoid from the POST request
+    protoid = request.json.get('protoid')
+    message = request.json.get('message')
+    user_name = request.json.get('user_name')
+
+    if not protoid or not message or not user_name:
+        return jsonify({'error': 'Missing parameters'}), 400
+
+    # Get the current date and time
+    timestamp = datetime.datetime.now()
+
+    # Connect to the database
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Insert the message into the FullboardForum table
+    cursor.execute("INSERT INTO FullboardForum (Protoid, Chat, DateTime) VALUES (%s, %s, %s)",
+                   (protoid, f"{user_name}: {message}", timestamp))
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+
+    return jsonify({'message': 'Message posted successfully'}), 200
+
+@app.route('/get_forum_messages/<protoid>', methods=['GET'])
+def get_forum_messages(protoid):
+    # Connect to the database
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Retrieve all messages for the given protoid
+    cursor.execute("SELECT Chat, DateTime FROM FullboardForum WHERE Protoid = %s ORDER BY DateTime ASC", [protoid])
+
+    messages = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    # Format the messages as a list of dicts
+    result = []
+    for message in messages:
+        result.append({'chat': message[0], 'datetime': message[1].strftime('%Y-%m-%d %H:%M:%S')})
+
+    return jsonify(result)
+
+@app.route('/icaf-upload-files', methods=['POST'])
+def icaf_upload_files():
+    try:
+        # Debugging: Log incoming form data and files
+        print("Form Data:", request.form)
+        print("Files:", request.files)
+
+        # Get data from the request
+        protoid = request.form.get('protoid')
+        reviewer_email = request.form.get('userEmail')  # Match the key sent from the frontend
+        icaf_file = request.files.get('icaf')
+        paf_file = request.files.get('paf')
+
+        # Validate inputs
+        if not protoid or not reviewer_email or not icaf_file or not paf_file:
+            return jsonify({"status": "error", "message": "Missing required fields: protoid, reviewer email, or files."})
+
+        # Read file data
+        icaf_data = icaf_file.read()
+        paf_data = paf_file.read()
+
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+
+            # Fetch ReviewerID based on Protoid and ReviewerEmail
+            cursor.execute("""
+                SELECT ReviewerID
+                FROM Reviewer
+                WHERE Protoid = %s AND ReviewerEmail = %s
+            """, (protoid, reviewer_email))
+            reviewer = cursor.fetchone()
+
+            if not reviewer:
+                return jsonify({"status": "error", "message": "No reviewer found with the given Protoid and email."})
+
+            reviewer_id = reviewer[0]
+
+            # Insert files into Reviewerfiles table
+            cursor.execute("""
+                INSERT INTO Reviewerfiles (ReviewerID, FinishedICAF, ICAFFileName, FinishedProtocol, ProtocolFileName)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (
+                reviewer_id,
+                icaf_data, icaf_file.filename,
+                paf_data, paf_file.filename
+            ))
+
+            conn.commit()
+
+        return jsonify({"status": "success", "message": "Files uploaded successfully."})
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+@app.route('/get-icaf-paf-files', methods=['GET'])
+def get_icaf_paf_files():
+    try:
+        protoid = request.args.get('protoid')
+        user_email = request.args.get('userEmail')
+
+        if not protoid or not user_email:
+            return jsonify({"status": "error", "message": "Missing Protoid or User Email."})
+
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+
+            # Fetch the filenames from the database (no binary data)
+            cursor.execute("""
+                SELECT
+                    ICAFFileName, ProtocolFileName
+                FROM Reviewerfiles
+                JOIN Reviewer ON Reviewerfiles.ReviewerID = Reviewer.ReviewerID
+                WHERE Reviewer.Protoid = %s AND Reviewer.ReviewerEmail = %s
+            """, (protoid, user_email))
+            files = cursor.fetchall()
+
+
+        # Prepare file data with only filenames
+        file_list = []
+        for row in files:
+            file_list.append({
+                "icaf_filename": row[0],  # ICAF file name
+                "paf_filename": row[1],   # PAF file name
+            })
+
+        return jsonify({"status": "success", "files": file_list})
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+
+
+
+
+@app.route('/get-icaf-file', methods=['GET'])
+def get_icaf_file():
+    try:
+        protoid = request.args.get('protoid')
+        user_email = request.args.get('userEmail')
+
+        if not protoid or not user_email:
+            return jsonify({"status": "error", "message": "Missing Protoid or User Email."})
+
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+
+            # Fetch the ICAF file data (binary) based on protoid and user_email
+            cursor.execute("""
+                SELECT ICAFFileName, FinishedICAF
+                FROM Reviewerfiles
+                JOIN Reviewer ON Reviewerfiles.ReviewerID = Reviewer.ReviewerID
+                WHERE Reviewer.Protoid = %s AND Reviewer.ReviewerEmail = %s
+            """, (protoid, user_email))
+            file = cursor.fetchone()
+
+        if not file:
+            return jsonify({"status": "error", "message": "No ICAF file found for the given Protoid and User Email."})
+
+        filename = file[0]
+        file_data = file[1]
+
+        # Return the file as an attachment for download
+        return send_file(
+            BytesIO(file_data),  # Convert binary data to a BytesIO stream
+            download_name=filename,  # Set the filename for the download
+            as_attachment=True
+        )
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+
+@app.route('/get-paf-file', methods=['GET'])
+def get_paf_file():
+    try:
+        protoid = request.args.get('protoid')
+        user_email = request.args.get('userEmail')
+
+        if not protoid or not user_email:
+            return jsonify({"status": "error", "message": "Missing Protoid or User Email."})
+
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+
+            # Fetch the PAF file data (binary) based on protoid and user_email
+            cursor.execute("""
+                SELECT ProtocolFileName, FinishedProtocol
+                FROM Reviewerfiles
+                JOIN Reviewer ON Reviewerfiles.ReviewerID = Reviewer.ReviewerID
+                WHERE Reviewer.Protoid = %s AND Reviewer.ReviewerEmail = %s
+            """, (protoid, user_email))
+            file = cursor.fetchone()
+
+        if not file:
+            return jsonify({"status": "error", "message": "No PAF file found for the given Protoid and User Email."})
+
+        filename = file[0]
+        file_data = file[1]
+
+        # Return the file as an attachment for download
+        return send_file(
+            BytesIO(file_data),  # Convert binary data to a BytesIO stream
+            download_name=filename,  # Set the filename for the download
+            as_attachment=True
+        )
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+
+@app.route('/update_review_type', methods=['POST'])
+def update_review_type():
+    try:
+        # Fetch data from the incoming request
+        data = request.json
+        protoid = data.get('protoid')
+        review_type = data.get('reviewType')
+
+        # Validate inputs
+        if not protoid or not review_type:
+            return jsonify({'error': 'Missing protoid or reviewType'}), 400
+
+        # Connect to the database
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        # Update the ReviewType for the given protoid
+        query = "UPDATE Protocol SET ReviewType = %s WHERE Protoid = %s"
+        cursor.execute(query, (review_type, protoid))
+        conn.commit()
+
+        if cursor.rowcount > 0:
+            return jsonify({'message': 'ReviewType updated successfully'}), 200
+        else:
+            return jsonify({'error': 'No matching protocol found'}), 404
+
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+
+    finally:
+        # Close the connection
+        if 'cursor' in locals() and cursor:
+            cursor.close()
+        if 'conn' in locals() and conn:
+            conn.close()
+
+
+
+@app.route('/get-more-icaf-paf-files', methods=['GET'])
+def get_more_icaf_paf_files():
+    try:
+        protoid = request.args.get('protoid')
+
+        if not protoid:
+            return jsonify({"status": "error", "message": "Missing Protoid."})
+
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+
+            # Fetch filenames for up to 3 reviewers
+            cursor.execute("""
+                SELECT Reviewer.ReviewerName, ICAFFileName, ProtocolFileName
+                FROM Reviewerfiles
+                JOIN Reviewer ON Reviewerfiles.ReviewerID = Reviewer.ReviewerID
+                WHERE Reviewer.Protoid = %s
+                LIMIT 3
+            """, (protoid,))
+            rows = cursor.fetchall()
+
+        if not rows:
+            return jsonify({"status": "error", "message": "No files found for the given Protoid."})
+
+        # Prepare file data for up to 3 reviewers
+        files = []
+        for row in rows:
+            reviewer_name, icaf_filename, paf_filename = row
+            files.append({
+                "reviewer_name": reviewer_name,
+                "icaf_filename": icaf_filename,
+                "paf_filename": paf_filename,
+            })
+
+        return jsonify({"status": "success", "files": files})
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+@app.route('/get-more-icaf-file', methods=['GET'])
+def get_more_icaf_file():
+    try:
+        protoid = request.args.get('protoid')
+        filename = request.args.get('filename')
+
+        if not protoid or not filename:
+            return jsonify({"status": "error", "message": "Missing Protoid or Filename."})
+
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+
+            # Fetch the ICAF file data (binary) based on protoid and filename
+            cursor.execute("""
+                SELECT FinishedICAF
+                FROM Reviewerfiles
+                JOIN Reviewer ON Reviewerfiles.ReviewerID = Reviewer.ReviewerID
+                WHERE Reviewer.Protoid = %s AND ICAFFileName = %s
+            """, (protoid, filename))
+            file = cursor.fetchone()
+
+        if not file:
+            return jsonify({"status": "error", "message": "No ICAF file found for the given Protoid and Filename."})
+
+        file_data = file[0]
+
+        # Return the file as an attachment for download
+        return send_file(
+            BytesIO(file_data),  # Convert binary data to a BytesIO stream
+            download_name=filename,  # Set the filename for the download
+            as_attachment=True
+        )
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+@app.route('/get-more-paf-file', methods=['GET'])
+def get_more_paf_file():
+    try:
+        protoid = request.args.get('protoid')
+        filename = request.args.get('filename')
+
+        if not protoid or not filename:
+            return jsonify({"status": "error", "message": "Missing Protoid or Filename."})
+
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+
+            # Fetch the PAF file data (binary) based on protoid and filename
+            cursor.execute("""
+                SELECT FinishedProtocol
+                FROM Reviewerfiles
+                JOIN Reviewer ON Reviewerfiles.ReviewerID = Reviewer.ReviewerID
+                WHERE Reviewer.Protoid = %s AND ProtocolFileName = %s
+            """, (protoid, filename))
+            file = cursor.fetchone()
+
+        if not file:
+            return jsonify({"status": "error", "message": "No PAF file found for the given Protoid and Filename."})
+
+        file_data = file[0]
+
+        # Return the file as an attachment for download
+        return send_file(
+            BytesIO(file_data),  # Convert binary data to a BytesIO stream
+            download_name=filename,  # Set the filename for the download
+            as_attachment=True
+        )
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
+
+# Run the Flask app
+if __name__ == '__main__':
+    app.run(debug=True)

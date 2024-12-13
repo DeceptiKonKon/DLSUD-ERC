@@ -1,0 +1,72 @@
+CREATE TABLE Users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    account_type VARCHAR(50) NOT NULL,
+    confirmation_status BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE AcademicYear (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    AcadYear VARCHAR(255) NOT NULL,
+    SetStatus BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE Protocols (
+    Protoid INT AUTO_INCREMENT PRIMARY KEY,
+    ResearchTitle VARCHAR(255) NOT NULL,
+    Email VARCHAR(255) NOT NULL,
+    College VARCHAR(255) NOT NULL,
+    Category VARCHAR(255) NOT NULL,
+    ReviewType VARCHAR(50) DEFAULT 'Not Decided',
+    Proponent1 VARCHAR(255) NOT NULL,
+    Proponent2 VARCHAR(255) DEFAULT 'N/A',
+    Proponent3 VARCHAR(255) DEFAULT 'N/A',
+    AcadYear VARCHAR(255),
+    EthicsStatus VARCHAR(50) DEFAULT 'Pending'
+);
+
+CREATE TABLE Files (
+    FileID INT AUTO_INCREMENT PRIMARY KEY,
+    Protoid INT NOT NULL,
+    Filename VARCHAR(255) NOT NULL,
+    FileCategory VARCHAR(255) NOT NULL,
+    FileData BLOB NOT NULL,
+    FOREIGN KEY (Protoid) REFERENCES Protocols(Protoid)
+);
+
+CREATE TABLE Reviewer (
+    ReviewerID INT AUTO_INCREMENT PRIMARY KEY,
+    Protoid INT NOT NULL,
+    ReviewerName VARCHAR(255) NOT NULL,
+    ReviewerEmail VARCHAR(255) NOT NULL,
+    PaidAmount DECIMAL(10, 2),
+    ReviewStatus VARCHAR(50) DEFAULT 'In Progress',
+    IsPrimaryReviewer BOOLEAN DEFAULT FALSE,
+    StartDate DATETIME,
+    EndDate DATETIME,
+    Remind_1day BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (Protoid) REFERENCES Protocols(Protoid)
+);
+
+CREATE TABLE ReviewerFiles (
+    ReviewerFileID INT AUTO_INCREMENT PRIMARY KEY,
+    ReviewerID INT NOT NULL,
+    FinishedICAFFileName VARCHAR(255),
+    FinishedICAFData BLOB,
+    FinishedPAFFileName VARCHAR(255),
+    FinishedPAFData BLOB,
+    FOREIGN KEY (ReviewerID) REFERENCES Reviewer(ReviewerID)
+);
+
+CREATE TABLE FullboardForum (
+    ForumID INT AUTO_INCREMENT PRIMARY KEY,
+    Protoid INT NOT NULL,
+    Chat TEXT NOT NULL,
+    DateTime DATETIME NOT NULL,
+    FOREIGN KEY (Protoid) REFERENCES Protocols(Protoid)
+);
+
+ALTER TABLE Protocols AUTO_INCREMENT = 240000;
+ALTER TABLE Reviewer AUTO_INCREMENT = 670000;
