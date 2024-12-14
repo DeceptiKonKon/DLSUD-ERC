@@ -56,7 +56,6 @@ window.onload = () => {
 
     if (window.location.pathname.endsWith('dashboard.html')) {
         initDashboardPage();
-        sendReminderEmails();
 
 
         const accountType = sessionStorage.getItem('accountType');
@@ -82,7 +81,6 @@ window.onload = () => {
 
         if (accountType == 'ethics-reviewer') {
             fetchReviewerProtocols();
-            sendReminderEmails();
         }
         if (accountType == 'erc-chair') {
 
@@ -1400,32 +1398,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 //==================================================================================================================
 
-// Function to fetch reminder status and trigger email sending
-function sendReminderEmails() {
-    // Prepare the data to send, if any is required (empty here for simplicity)
-    const data = {};
-
-    // Fetch request to the backend API to check and send reminders
-    fetch('https://dlsudercproject.pythonanywhere.com/check-reminders', {  // Updated URL
-        method: 'POST', // Using POST method
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data), // Convert data object to JSON
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message) {
-            alert(data.message);  // Notify the admin if reminders are sent or no action needed
-        } else if (data.error) {
-            alert("Error: " + data.error);  // Handle any errors
-        }
-    })
-    .catch(error => {
-        console.error("There was an error:", error);
-        alert("Failed to send reminders. Please try again.");
-    });
-}
 
 
 //==================================================================================================================
