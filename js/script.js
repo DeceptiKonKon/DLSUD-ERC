@@ -49,17 +49,35 @@ window.onload = () => {
     if (document.getElementById('signup-form')) {
         handleSignupForm();
     }
+    if (window.location.pathname.endsWith('paysummary.html')) {
+        populateReviewersAndPaySummary();
+        document.getElementById("download-docx").addEventListener("click", downloadTableAsWord);
+    }
 
     if (window.location.pathname.endsWith('dashboard.html')) {
         initDashboardPage();
         sendReminderEmails();
+
+
         const accountType = sessionStorage.getItem('accountType');
         if (accountType == 'student'){
             fetchProtocols();
         }
         if (accountType == 'erc-secretary') {
+            fetchSortedProtocols();
+        // Event listener for the Search button
+        document.getElementById('search-button').addEventListener('click', fetchSortedProtocols);
 
+        // Event listener for changes in the sort type radio buttons
+        document.querySelectorAll('input[name="sort"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                // Update the selection options and fetch the protocols
+                updateSelectionOptions();
+            });
+        });
 
+        // Event listener for changes in the selection dropdown
+        document.getElementById('selection-button').addEventListener('change', fetchSortedProtocols);
         }
 
         if (accountType == 'ethics-reviewer') {
@@ -91,6 +109,7 @@ window.onload = () => {
             populateReviewers();
             handleReviewerCountChange();
             fetchReviewerStatus();
+            generateMoreDownloadIcafPafFilesTable();
 
 
             // Set the current date and time for start date (readonly)
@@ -107,7 +126,6 @@ window.onload = () => {
 
 
             if (accountType == 'erc-secretary') {
-                generateMoreDownloadIcafPafFilesTable()
                             // Add event listeners to buttons
                 document.getElementById('not-eligible-button').addEventListener('click', () => {
                     updateEthicsStatus('Not Eligible');
@@ -737,6 +755,115 @@ function displayProtocols(protocols) {
     });
 }
 
+//=======================================================================================================================
+
+async function fetchSortedProtocols() {
+    // Retrieve the sort type and selected option from the UI
+    const sortType = document.querySelector('input[name="sort"]:checked')?.value || 'all';
+    const selectedOption = document.getElementById('selection-button').value || '';
+    const searchQuery = document.getElementById('search-bar').value.trim();
+
+    // Construct the API URL
+    const apiUrl = `https://dlsudercproject.pythonanywhere.com/get-sort-protocols`;
+
+    // Build the query parameters
+    const params = new URLSearchParams({
+        sort_type: sortType,
+        selected_option: selectedOption,
+        search: searchQuery,
+    });
+
+    try {
+        const response = await fetch(`${apiUrl}?${params.toString()}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.status === 'success') {
+                displayProtocols(data.protocols);
+            } else {
+                console.error(data.message);
+                alert(data.message || 'Failed to fetch protocols.');
+            }
+        } else {
+            console.error('Failed to fetch sorted protocols.');
+        }
+    } catch (error) {
+        console.error('Error fetching protocols:', error);
+    }
+}
+
+function displayProtocols(protocols) {
+    const tableBody = document.querySelector('#sec-protocols-table tbody');
+    tableBody.innerHTML = ''; // Clear any existing rows
+
+    protocols.forEach(protocol => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${protocol.ResearchTitle}</td>
+            <td>${protocol.College || 'N/A'}</td>
+            <td>${protocol.ReviewType || 'N/A'}</td>
+            <td>${protocol.Category || 'N/A'}</td>
+            <td>${protocol.EthicsStatus || 'No Ethics Status Yet'}</td>
+            <td><button class="view-btn" data-protoid="${protocol.Protoid}">View</button></td>
+        `;
+
+        // Add event listener to the "View" button
+        const viewButton = row.querySelector('.view-btn');
+        viewButton.addEventListener('click', function () {
+            // Store the Protoid in sessionStorage
+            sessionStorage.setItem('protoid', protocol.Protoid);
+            console.log(`Redirecting to protocol: ${protocol.Protoid}`); // Debug log
+            // Redirect to viewprotocol.html
+            window.location.href = 'viewprotocol.html';
+        });
+
+        tableBody.appendChild(row);
+    });
+}
+
+
+
+// Function to update the dropdown based on the selected radio button
+function updateSelectionOptions() {
+    const sortType = document.querySelector('input[name="sort"]:checked')?.value || 'all';
+    const selectionDropdown = document.getElementById('selection-button');
+
+    // Clear existing options
+    selectionDropdown.innerHTML = '<option value="" disabled selected>-- Select an Option --</option>';
+
+    // Populate new options based on the selected sort type
+    const options = getOptionsForSortType(sortType);
+    options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option;
+        optionElement.textContent = option;
+        selectionDropdown.appendChild(optionElement);
+    });
+
+    // Fetch and update the protocols immediately after updating the selection options
+    fetchSortedProtocols();
+}
+
+// Helper function to get options for a given sort type
+function getOptionsForSortType(sortType) {
+    const optionsMap = {
+        college: ['CICS', 'CEAT', 'CBAA', 'CLAC', 'CCJE', 'COED', 'CTHM', 'COSC'],
+        'review-type': ['Expedited', 'Full-board'],
+        category: ['undergraduate', 'graduate'],
+        'ethics-status': ['Pending', 'Approved', 'Rejected', 'Checking', 'Assigning'],
+        all: [], // No specific options for 'all'
+    };
+    return optionsMap[sortType] || [];
+}
+
+
+
+
 // =====================================================================================================================
 
 
@@ -1248,7 +1375,7 @@ function assignProtocol() {
         .then(data => {
             if (data.status === 'success') {
                 alert('Reviewers assigned successfully!');
-                reviewEthicsStatus();
+
             } else {
                 alert('Error assigning reviewers: ' + data.message);
             }
@@ -1415,7 +1542,7 @@ function populateReviewerStatusTable(reviewers) {
         emailCell.textContent = reviewer.ReviewerEmail;
 
         const statusCell = document.createElement('td');
-        statusCell.textContent = reviewer.ReviewStatus || 'Pending'; // Default to 'Pending' if status is null
+        statusCell.textContent = reviewer.ReviewStatus || 'In Progress'; // Default to 'Pending' if status is null
 
         // Append cells to row
         row.appendChild(nameCell);
@@ -1574,7 +1701,6 @@ function displayEthicsProtocols(protocols) {
     protocols.forEach(protocol => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${protocol.Protoid}</td>
             <td>${protocol.ResearchTitle}</td>
             <td>${protocol.College || 'N/A'}</td>
             <td>${protocol.ReviewType || 'N/A'}</td>
@@ -1659,6 +1785,7 @@ async function submiticafFiles() {
         const result = await response.json();
 
         if (result.status === 'success') {
+            updateReviewStatus();
             alert('Files uploaded successfully!');
             // Redirect to the dashboard
             window.location.href = 'dashboard.html';
@@ -1749,9 +1876,235 @@ async function generateDownloadIcafFilesTable() {
     }
 }
 
-//==============================================================================================================
+//==============================================================================================================================
 
 
+async function generateMoreDownloadIcafPafFilesTable() {
+    const protoid = sessionStorage.getItem('protoid');
+    const tableBody = document.getElementById('more-icaf-paf-download-list');
+    tableBody.innerHTML = '';
+
+    if (!protoid) {
+        alert('Protoid is missing.');
+        return;
+    }
+
+    try {
+        const response = await fetch(`https://dlsudercproject.pythonanywhere.com/get-more-icaf-paf-files?protoid=${protoid}`);
+        const result = await response.json();
+
+        if (result.status !== 'success') {
+            alert(result.message);
+            return;
+        }
+
+        const files = result.files;
+
+        files.forEach(file => {
+            // ICAF File Row
+            if (file.icaf_filename) {
+                const row = document.createElement('tr');
+
+                const typeCell = document.createElement('td');
+                typeCell.textContent = `${file.reviewer_name} - ICAF`;
+
+                const downloadCell = document.createElement('td');
+                const downloadButton = document.createElement('button');
+                downloadButton.textContent = 'Download ICAF';
+                downloadButton.onclick = () => {
+                    window.location.href = `https://dlsudercproject.pythonanywhere.com/get-more-icaf-file?protoid=${protoid}&filename=${file.icaf_filename}`;
+                };
+
+                downloadCell.appendChild(downloadButton);
+                row.appendChild(typeCell);
+                row.appendChild(downloadCell);
+                tableBody.appendChild(row);
+            }
+
+            // PAF File Row
+            if (file.paf_filename) {
+                const row = document.createElement('tr');
+
+                const typeCell = document.createElement('td');
+                typeCell.textContent = `${file.reviewer_name} - PAF`;
+
+                const downloadCell = document.createElement('td');
+                const downloadButton = document.createElement('button');
+                downloadButton.textContent = 'Download PAF';
+                downloadButton.onclick = () => {
+                    window.location.href = `https://dlsudercproject.pythonanywhere.com/get-more-paf-file?protoid=${protoid}&filename=${file.paf_filename}`;
+                };
+
+                downloadCell.appendChild(downloadButton);
+                row.appendChild(typeCell);
+                row.appendChild(downloadCell);
+                tableBody.appendChild(row);
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching files:', error);
+        alert('An error occurred while fetching files.');
+    }
+}
+
+
+//===============================================================================================================================
+
+function updateReviewStatus() {
+    const protoid = sessionStorage.getItem("protoid");
+    const reviewerEmail = sessionStorage.getItem("userEmail");
+
+    if (!protoid || !reviewerEmail) {
+        console.error("Protoid and ReviewerEmail must be available in session storage.");
+        return;
+    }
+
+    fetch("https://dlsudercproject.pythonanywhere.com/update-review-status", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ protoid, reviewerEmail }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error(data.error);
+            } else {
+                console.log(data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+}
+
+//===============================================================================================================================
+
+function populateReviewersAndPaySummary() {
+    const selectionButton = document.getElementById("selection-button");
+    const paySummaryTable = document.getElementById("paysummary-table").getElementsByTagName("tbody")[0];
+
+    // Fetch reviewers for the dropdown
+    fetch("https://dlsudercproject.pythonanywhere.com/get-pay-reviewers")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to fetch reviewers: " + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Clear the dropdown before adding options
+            selectionButton.innerHTML = '<option value="" disabled selected>-- Select an Option --</option>';
+            
+            if (Array.isArray(data) && data.length > 0) {
+                data.forEach(reviewer => {
+                    const option = document.createElement("option");
+                    option.value = reviewer.email;
+                    option.textContent = reviewer.name;
+                    selectionButton.appendChild(option);
+                });
+            } else {
+                console.log("No reviewers found.");
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching reviewers:", error);
+            alert("There was an error loading reviewers. Please try again.");
+        });
+
+    // Fetch and update pay summary when a reviewer is selected
+    selectionButton.addEventListener("change", function () {
+        const reviewerEmail = selectionButton.value;
+        
+        if (!reviewerEmail) {
+            return; // Do nothing if no reviewer is selected
+        }
+
+        fetch("https://dlsudercproject.pythonanywhere.com/get-pay-summary", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ reviewerEmail })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Clear existing table rows
+            paySummaryTable.innerHTML = "";
+
+            if (Array.isArray(data)) {
+                data.forEach(row => {
+                    const tr = document.createElement("tr");
+
+                    const titleTd = document.createElement("td");
+                    titleTd.textContent = row.ResearchTitle;
+
+                    const reviewerTd = document.createElement("td");
+                    reviewerTd.textContent = row.ReviewerName;
+
+                    const categoryTd = document.createElement("td");
+                    categoryTd.textContent = row.Category;
+
+                    const amountTd = document.createElement("td");
+                    amountTd.textContent = row.PaidAmount;
+
+                    tr.appendChild(titleTd);
+                    tr.appendChild(reviewerTd);
+                    tr.appendChild(categoryTd);
+                    tr.appendChild(amountTd);
+
+                    paySummaryTable.appendChild(tr);
+                });
+
+                // Send the pay summary data to Flask for Word document generation
+                fetch('https://dlsudercproject.pythonanywhere.com/download-pay-summary', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        reviewerEmail: reviewerEmail,
+                        paySummary: data.map(row => [
+                            row.ResearchTitle,
+                            row.ReviewerName,
+                            row.Category,
+                            row.PaidAmount
+                        ])
+                    })
+                })
+                .then(response => response.blob())
+                .then(blob => {
+                    // Create a temporary link element to trigger the download
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'pay_summary.docx';
+                    link.click();
+                })
+                .catch(error => {
+                    console.error('Error generating Word file:', error);
+                });
+
+            } else {
+                console.log("No pay summary found for the selected reviewer.");
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching pay summary:", error);
+            alert("There was an error fetching the pay summary. Please try again.");
+        });
+    });
+}
+
+//==================================================================================================================================
+
+
+
+
+
+
+
+//===================================================================================================================================
 function sendEmail() {
     const recipientEmail = document.getElementById('email').textContent.trim();
     const subject = document.getElementById('email-subject').value;
@@ -1788,12 +2141,6 @@ function sendEmail() {
         });
 }
 
-
-
-
-
-
-
 function deleteProtocol() {
     const protoid = sessionStorage.getItem('protoid'); // Assume Protoid is stored in sessionStorage
 
@@ -1828,5 +2175,8 @@ function deleteProtocol() {
         });
 }
 
+function toPaySummary() {
+    window.location.href = 'paysummary.html';
+}
 
 
