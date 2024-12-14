@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
+    <title>Dashboard</title>
     <link rel="stylesheet" href="css/global.css">
 </head>
 <body>
@@ -65,7 +65,6 @@
             <table id="ethics-protocols-table">
                 <thead>
                     <tr>
-                        <th>Protocol ID</th>
                         <th>Research Title</th>
                         <th>College</th>
                         <th>Review Type</th>
@@ -86,10 +85,12 @@
             <table id="chair-protocols-table">
                 <thead>
                     <tr>
-                        <th>Protocol ID</th>
                         <th>Research Title</th>
+                        <th>College</th>
+                        <th>Review Type</th>
+                        <th>Category</th>
                         <th>Ethics Status</th>
-                        <th>Action</th>
+                        <th>View Protocol</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -101,10 +102,39 @@
         <!-- ERC Secretary Section -->
         <div id="erc-secretary-section" class="dashboard-section">
             <h2>ERC Secretary Section</h2>
+                <!-- Search Bar -->
+                <label for="sort-type">Search Research Title:</label>
+    <div class="search-bar">
+        <input type="text" id="search-bar" placeholder="Search...">
+        <button id="search-button">Search</button>
+    </div>
+
+    <!-- Sort Type Options -->
+    <div class="sort-options">
+        <label for="sort-type">Choose type of sort:</label>
+        <div id="sort-type">
+            <label><input type="radio" name="sort" value="all" checked> All</label>
+            <label><input type="radio" name="sort" value="college"> College</label>
+            <label><input type="radio" name="sort" value="review-type"> Review Type</label>
+            <label><input type="radio" name="sort" value="category"> Category</label>
+            <label><input type="radio" name="sort" value="ethics-status">Ethics Status</label>
+        </div>
+    </div>
+
+    <!-- Selection Button -->
+    <div>
+        <label for="selection-button">Select Option:</label>
+        <select id="selection-button">
+            <option value="" disabled selected>-- Select an Option --</option>
+            <!-- Additional options can be dynamically added here -->
+        </select>
+    </div>
+    <div>
+        <button id="oaysummary-button" onclick="toPaySummary()">To Pay Summary</button>
+    </div>
             <table id="sec-protocols-table">
                 <thead>
                     <tr>
-                        <th>Protocol ID</th>
                         <th>Research Title</th>
                         <th>College</th>
                         <th>Review Type</th>
@@ -116,21 +146,20 @@
                 <tbody>
                     <!-- Rows will be dynamically inserted here -->
                 </tbody>
-            </table>
-            
+            </table>    
         </div>
+        
         <div id="layman-section" class="dashboard-section">
             <h2>Layman Section</h2>
             <table id="lay-protocols-table">
                 <thead>
                     <tr>
-                        <th>Protocol ID</th>
                         <th>Research Title</th>
                         <th>College</th>
                         <th>Review Type</th>
                         <th>Category</th>
                         <th>Ethics Status</th>
-                        <th>Action</th>
+                        <th>View Protocol</th>
                     </tr>
                 </thead>
                 <tbody>
