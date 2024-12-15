@@ -10,22 +10,30 @@ body {
     background-color: #f4f4f4;  /* Light mode background */
     color: black; /* Light mode text color */
     transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+    margin-top: 100px;
 }
 
 /* Header styling */
 header {
     background-color: rgb(20, 114, 20);
     color: white;
-    padding: 10px 10%;  /* Reduced padding for smaller header */
-    position: relative;
+    padding: 10px 10%;  /* Retain relative width padding */
+    position: fixed;  /* Fix the header to the top of the page */
+    top: 0;
+    left: 0;
+    width: 100%;  /* Ensure the header spans the full width of the viewport */
+    z-index: 1000;  /* Ensure it stays above other content */
     transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
     border-bottom: 5px solid black; /* Black border at the bottom */
 }
 
+/* Container for header content */
 .header-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;  /* Ensure container spans the full width */
+    box-sizing: border-box; /* Ensure padding is considered in the width calculation */
 }
 
 .logo img {
@@ -1381,21 +1389,19 @@ select#account-type:focus {
     border-radius: 4px;
 }
 
-
-
 #assign-form button:hover {
     background-color: #333;
 }
 
-/* General form styling */
+/* Dark Mode */
 .dark-mode #assign-form {
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #666;
+    background-color: #44444400;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0);
     font-family: Arial, sans-serif;
 }
 
@@ -1414,9 +1420,70 @@ select#account-type:focus {
     border-radius: 4px;
 }
 
-
-
 .dark-mode #assign-form button:hover {
+    background-color: #333;
+}
+
+
+/* General form styling for #fassigning-form */
+#fassigning-form {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+#fassigning-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+#fassigning-form select, #fassigning-form input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#fassigning-form button:hover {
+    background-color: #333;
+}
+
+/* Dark Mode for #fassigning-form */
+.dark-mode #fassigning-form {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #44444400;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0);
+    font-family: Arial, sans-serif;
+}
+
+.dark-mode #fassigning-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: white;
+}
+
+.dark-mode #fassigning-form select, .dark-mode #fassigning-form input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.dark-mode #fassigning-form button:hover {
     background-color: #333;
 }
 
@@ -1468,10 +1535,10 @@ select#account-type:focus {
 
 /* Dark Mode Styling for View Protocol */
 .dark-mode #viewprotocol {
-    background-color: #333; /* Dark background for main section */
+    background-color: #33333300; /* Dark background for main section */
     color: white; /* White text for general content */
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0); /* Subtle shadow for depth */
     padding: 20px;
 }
 
@@ -1480,7 +1547,7 @@ select#account-type:focus {
 }
 
 .dark-mode #viewprotocol .section {
-    background-color: #444; /* Darker background for subsections */
+    background-color: #333; /* Darker background for subsections */
     border: 1px solid #555; /* Subtle border for sections */
 }
 
@@ -1555,9 +1622,9 @@ select#account-type:focus {
 .dark-mode #viewprotocol .main-section {
     max-width: 900px;
     margin: auto;
-    background-color: #333;
+    background-color: #33333300;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0); /* Subtle shadow for depth */
     padding: 20px;
 }
 
