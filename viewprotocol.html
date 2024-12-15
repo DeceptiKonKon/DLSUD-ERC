@@ -142,7 +142,7 @@
                 <table id="download-files-table">
                     <thead>
                         <tr>
-                            <th>File Type</th>
+                            <th>File</th>
                             <th>Download</th>
                         </tr>
                     </thead>
@@ -176,7 +176,7 @@
             </section>
 
             <section id="assign-boards-section" class="section">
-                <h2>Assign Review Type</h2>
+                <h2>Review Type</h2>
 
 <!-- Select Dropdown with Options for Review Type -->
 <div class="form-group">
@@ -190,7 +190,7 @@
 
 <!-- Normal Button -->
 <div class="button-container">
-    <button id="Review-button" class="btn">Apply Review</button>
+    <button id="Review-button" class="btn">Apply</button>
 </div>
 
 <!-- Assign Protocol Section -->
@@ -212,18 +212,18 @@
         </div>
 
         <div class="form-group">
-            <label for="reviewer-2">Reviewer 2:</label>
+            <label for="reviewer-2">Reviewer 1:</label>
             <select id="reviewer-2" name="reviewer2" required>
-                <option value="">Select Reviewer 2</option>
+                <option value="">Select Reviewer 1</option>
                 <!-- Options will be dynamically populated here -->
             </select>
             <p id="reviewer-2-email"></p> <!-- Display email of Reviewer 2 -->
         </div>
 
         <div class="form-group">
-            <label for="reviewer-3">Reviewer 3:</label>
+            <label for="reviewer-3">Reviewer 2:</label>
             <select id="reviewer-3" name="reviewer3" required>
-                <option value="">Select Reviewer 3</option>
+                <option value="">Select Reviewer 2</option>
                 <!-- Options will be dynamically populated here -->
             </select>
             <p id="reviewer-3-email"></p> <!-- Display email of Reviewer 3 -->
@@ -275,15 +275,25 @@
             </select>
             <p id="freviewer-3-email"></p> <!-- Display email of Reviewer 3 -->
         </div>
-
         <div class="form-group">
-            <label for="layman-name">Layman Name:</label>
-            <input type="text" id="layman-name" name="laymanName" placeholder="Enter layman name" required>
+            <label for="layman">Reviewer 2:</label>
+            <select id="layman" name="layman" required>
+                <option value="">Select Layman</option>
+                <!-- Options will be dynamically populated here -->
+            </select>
+            <p id="layman-email"></p> <!-- Display email of Reviewer 3 -->
         </div>
 
+        <!-- Start Date (current time) -->
         <div class="form-group">
-            <label for="layman-email">Layman Email:</label>
-            <input type="email" id="layman-email" name="laymanEmail" placeholder="Enter layman email" required>
+            <label for="start-date">Start Date:</label>
+            <input type="datetime-local" id="start-date" name="startDate" value="" readonly>
+        </div>
+
+        <!-- End Date (input by user) -->
+        <div class="form-group">
+            <label for="end-date">End Date:</label>
+            <input type="datetime-local" id="end-date" name="endDate" required>
         </div>
 
         <button type="button" onclick="fassignProtocol()">Assign Protocol</button>
@@ -296,7 +306,7 @@
 
 
             <section id="submit-icaf-paf-section" class="section">
-                <h2>Upload Finished ICAF AND PAF Files</h2>
+                <h2>Upload ICAF/PAF Review</h2>
                 <table id="icaf-files-table">
                     <thead>
                         <tr>
@@ -318,28 +328,12 @@
                 <button id="uploadButton" onclick="submiticafFiles()">Submit Files</button>
             </section>
 
-            <!-- Download Files Section -->
-            <section id="icaf-paf-download-section" class="section">
-                <h2>Download ICAF/PAF Files</h2>
-                    <table id="icaf-paf-download-table">
-                        <thead>
-                            <tr>
-                                <th>File Type</th>
-                                <th>Download</th>
-                            </tr>
-                        </thead>
-                        <tbody id="icaf-paf-download-list">
-                        <!-- Dynamically populated ICAF/PAF files -->
-                        </tbody>
-                    </table>
-            </section>
-
             <section id="more-icaf-paf-download-section" class="section">
-                <h2>Download All ICAF/PAF Files</h2>
+                <h2>ICAF/PAF Review Status</h2>
                 <table id="more-icaf-paf-download-table">
                     <thead>
                         <tr>
-                            <th>File Type</th>
+                            <th>File</th>
                             <th>Download</th>
                         </tr>
                     </thead>
@@ -351,13 +345,15 @@
             
              <!-- Reviewer Status Section -->
             <section id="reviewer-status-section" class="section">
-                <h2>Reviewer Status</h2>
+                <h2>Reviewer Activity Timeline</h2>
                     <table id="reviewer-status-table">
                         <thead>
                             <tr>
                                 <th>Reviewer Name</th>
                                 <th>Reviewer Email</th>
                                 <th>Status</th>
+                                <th>Start Date</th>
+                                <th>Due Date</th>
                             </tr>
                         </thead>
                     <tbody id="reviewer-status-list">
