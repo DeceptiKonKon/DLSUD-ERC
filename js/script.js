@@ -58,6 +58,7 @@ window.onload = () => {
         initDashboardPage();
 
 
+
         const accountType = sessionStorage.getItem('accountType');
         if (accountType == 'student'){
             fetchProtocols();
@@ -81,8 +82,23 @@ window.onload = () => {
 
         if (accountType == 'ethics-reviewer') {
             fetchReviewerProtocols();
+            
         }
         if (accountType == 'erc-chair') {
+            fetchChairSortedProtocols();
+            // Event listener for the Search button
+        document.getElementById('search-button').addEventListener('click', fetchChairSortedProtocols);
+
+        // Event listener for changes in the sort type radio buttons
+        document.querySelectorAll('input[name="sort"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                // Update the selection options and fetch the protocols
+                updateChairSelectionOptions();
+            });
+        });
+
+        // Event listener for changes in the selection dropdown
+        document.getElementById('selection-button').addEventListener('change', fetchChairSortedProtocols);
 
 
         }
@@ -120,7 +136,15 @@ window.onload = () => {
             const endDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000); // 24 hours later
             endDateInput.value = endDate.toISOString().slice(0, 16); // Format to 'YYYY-MM-DDTHH:mm'
 
-
+                        // Set the current date and time for start date (readonly)
+            const fcurrentDate = new Date();
+            const fstartDateInput = document.getElementById('fstart-date');
+            fstartDateInput.value = fcurrentDate.toISOString().slice(0, 16); // Format to 'YYYY-MM-DDTHH:mm'
+        
+            // Set the end date input to be 24 hours after the start date
+            const fendDateInput = document.getElementById('fend-date');
+            const fendDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000); // 24 hours later
+            fendDateInput.value = fendDate.toISOString().slice(0, 16); // Format to 'YYYY-MM-DDTHH:mm'
 
 
             if (accountType == 'erc-secretary') {
@@ -782,7 +806,47 @@ async function fetchSortedProtocols() {
         if (response.ok) {
             const data = await response.json();
             if (data.status === 'success') {
-                displayProtocols(data.protocols);
+                displaySecProtocols(data.protocols);
+                
+            } else {
+                console.error(data.message);
+                alert(data.message || 'Failed to fetch protocols.');
+            }
+        } else {
+            console.error('Failed to fetch sorted protocols.');
+        }
+    } catch (error) {
+        console.error('Error fetching protocols:', error);
+    }
+}
+async function fetchChairSortedProtocols() {
+    // Retrieve the sort type and selected option from the UI
+    const sortType = document.querySelector('input[name="sort"]:checked')?.value || 'all';
+    const selectedOption = document.getElementById('selection-button').value || '';
+    const searchQuery = document.getElementById('search-bar').value.trim();
+
+    // Construct the API URL
+    const apiUrl = `https://dlsudercproject.pythonanywhere.com/get-sort-protocols`;
+
+    // Build the query parameters
+    const params = new URLSearchParams({
+        sort_type: sortType,
+        selected_option: selectedOption,
+        search: searchQuery,
+    });
+
+    try {
+        const response = await fetch(`${apiUrl}?${params.toString()}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.status === 'success') {
+                displayChairProtocols(data.protocols);
             } else {
                 console.error(data.message);
                 alert(data.message || 'Failed to fetch protocols.');
@@ -795,7 +859,7 @@ async function fetchSortedProtocols() {
     }
 }
 
-function displayProtocols(protocols) {
+function displaySecProtocols(protocols) {
     const tableBody = document.querySelector('#sec-protocols-table tbody');
     tableBody.innerHTML = ''; // Clear any existing rows
 
@@ -824,6 +888,34 @@ function displayProtocols(protocols) {
     });
 }
 
+function displayChairProtocols(protocols) {
+    const tableBody = document.querySelector('#chair-protocols-table tbody');
+    tableBody.innerHTML = ''; // Clear any existing rows
+
+    protocols.forEach(protocol => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${protocol.ResearchTitle}</td>
+            <td>${protocol.College || 'N/A'}</td>
+            <td>${protocol.ReviewType || 'N/A'}</td>
+            <td>${protocol.Category || 'N/A'}</td>
+            <td>${protocol.EthicsStatus || 'No Ethics Status Yet'}</td>
+            <td><button class="view-btn" data-protoid="${protocol.Protoid}">View</button></td>
+        `;
+
+        // Add event listener to the "View" button
+        const viewButton = row.querySelector('.view-btn');
+        viewButton.addEventListener('click', function () {
+            // Store the Protoid in sessionStorage
+            sessionStorage.setItem('protoid', protocol.Protoid);
+            console.log(`Redirecting to protocol: ${protocol.Protoid}`); // Debug log
+            // Redirect to viewprotocol.html
+            window.location.href = 'viewprotocol.html';
+        });
+
+        tableBody.appendChild(row);
+    });
+}
 
 
 // Function to update the dropdown based on the selected radio button
@@ -846,6 +938,26 @@ function updateSelectionOptions() {
     // Fetch and update the protocols immediately after updating the selection options
     fetchSortedProtocols();
 }
+// Function to update the dropdown based on the selected radio button
+function updateChairSelectionOptions() {
+    const sortType = document.querySelector('input[name="sort"]:checked')?.value || 'all';
+    const selectionDropdown = document.getElementById('selection-button');
+
+    // Clear existing options
+    selectionDropdown.innerHTML = '<option value="" disabled selected>-- Select an Option --</option>';
+
+    // Populate new options based on the selected sort type
+    const options = getOptionsForSortType(sortType);
+    options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option;
+        optionElement.textContent = option;
+        selectionDropdown.appendChild(optionElement);
+    });
+
+    // Fetch and update the protocols immediately after updating the selection options
+    fetchChairSortedProtocols();
+}
 
 // Helper function to get options for a given sort type
 function getOptionsForSortType(sortType) {
@@ -853,11 +965,23 @@ function getOptionsForSortType(sortType) {
         college: ['CICS', 'CEAT', 'CBAA', 'CLAC', 'CCJE', 'COED', 'CTHM', 'COSC'],
         'review-type': ['Expedited', 'Full-board'],
         category: ['undergraduate', 'graduate'],
-        'ethics-status': ['Pending', 'Approved', 'Rejected', 'Checking', 'Assigning'],
+        'ethics-status': ['Pending','Eligible', 'Exempted', 'Checking', 'Assigning'],
         all: [], // No specific options for 'all'
     };
     return optionsMap[sortType] || [];
 }
+// Helper function to get options for a given sort type
+function getChairOptionsForSortType(sortType) {
+    const optionsMap = {
+        college: ['CICS', 'CEAT', 'CBAA', 'CLAC', 'CCJE', 'COED', 'CTHM', 'COSC'],
+        'review-type': ['Expedited', 'Full-board'],
+        category: ['undergraduate', 'graduate'],
+        'ethics-status': ['Pending','Eligible', 'Exempted', 'Checking', 'Assigning'],
+        all: [], // No specific options for 'all'
+    };
+    return optionsMap[sortType] || [];
+}
+
 
 
 
@@ -1385,18 +1509,10 @@ function assignProtocol() {
 }
 
 
-// Set current date and time as the default start date
-document.addEventListener('DOMContentLoaded', () => {
-    const startDateInput = document.getElementById('start-date');
-    const now = new Date().toISOString().slice(0, -1); // Format as yyyy-MM-ddTHH:mm
-    startDateInput.value = now;
-
-    handleReviewerCountChange(); // Initialize reviewer count handling
-    populateReviewers(); // Populate reviewer dropdowns
-});
-
 
 //==================================================================================================================
+
+// Function to fetch reminder status and trigger email sending
 
 
 
@@ -1487,7 +1603,7 @@ function fetchReviewerStatus() {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                populateReviewerStatusTable(data.data);
+                populateReviewerStatusTable(data.data); // Pass the reviewers' data
             } else {
                 alert('Error fetching reviewer status: ' + data.message);
             }
@@ -1498,8 +1614,10 @@ function fetchReviewerStatus() {
         });
 }
 
-// Function to populate the reviewer status table
+
 function populateReviewerStatusTable(reviewers) {
+    console.log("Reviewers Data:", reviewers); // Debug log
+
     const tableBody = document.getElementById('reviewer-status-list');
     tableBody.innerHTML = ''; // Clear existing content
 
@@ -1514,17 +1632,27 @@ function populateReviewerStatusTable(reviewers) {
         emailCell.textContent = reviewer.ReviewerEmail;
 
         const statusCell = document.createElement('td');
-        statusCell.textContent = reviewer.ReviewStatus || 'In Progress'; // Default to 'Pending' if status is null
+        statusCell.textContent = reviewer.ReviewStatus || 'In Progress';
+
+        const startDateCell = document.createElement('td');
+        startDateCell.textContent = reviewer.StartDate || 'N/A'; // Directly display date or 'N/A'
+
+        const endDateCell = document.createElement('td');
+        endDateCell.textContent = reviewer.EndDate || 'N/A'; // Directly display date or 'N/A'
 
         // Append cells to row
         row.appendChild(nameCell);
         row.appendChild(emailCell);
         row.appendChild(statusCell);
+        row.appendChild(startDateCell);
+        row.appendChild(endDateCell);
 
         // Append row to table body
         tableBody.appendChild(row);
     });
 }
+
+
 
 //================================================================================================================
 async function fetchsecretaryProtocols() {
@@ -1543,6 +1671,7 @@ async function fetchsecretaryProtocols() {
             const data = await response.json();
             if (data.status === 'success') {
                 displaySecProtocols(data.protocols);
+                
             } else {
                 console.error(data.message);
             }
@@ -1610,61 +1739,6 @@ async function fetchReviewerProtocols() {
     }
 }
 
-
-
-function displayChairProtocols(protocols) {
-    const tableBody = document.querySelector('#chair-protocols-table tbody');
-    tableBody.innerHTML = '';  // Clear any existing rows
-
-    protocols.forEach(protocol => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${protocol.Protoid}</td>
-            <td>${protocol.ResearchTitle}</td>
-            <td>${protocol.EthicsStatus}</td>
-            <td><button class="view-btn" data-protoid="${protocol.Protoid}">View</button></td>
-        `;
-
-        // Add event listener to the "View" button
-        const viewButton = row.querySelector('.view-btn');
-        viewButton.addEventListener('click', function() {
-            // Store the Protoid in sessionStorage
-            sessionStorage.setItem('protoid', protocol.Protoid);
-            console.log(protocol.Protoid); // Corrected log statement
-            // Redirect to viewprotocol.html
-            window.location.href = 'viewprotocol.html';
-        });
-
-        tableBody.appendChild(row);
-    });
-}
-
-function displaySecProtocols(protocols) {
-    const tableBody = document.querySelector('#sec-protocols-table tbody');
-    tableBody.innerHTML = '';  // Clear any existing rows
-
-    protocols.forEach(protocol => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${protocol.Protoid}</td>
-            <td>${protocol.ResearchTitle}</td>
-            <td>${protocol.EthicsStatus}</td>
-            <td><button class="view-btn" data-protoid="${protocol.Protoid}">View</button></td>
-        `;
-
-        // Add event listener to the "View" button
-        const viewButton = row.querySelector('.view-btn');
-        viewButton.addEventListener('click', function() {
-            // Store the Protoid in sessionStorage
-            sessionStorage.setItem('protoid', protocol.Protoid);
-            console.log(protocol.Protoid); // Corrected log statement
-            // Redirect to viewprotocol.html
-            window.location.href = 'viewprotocol.html';
-        });
-
-        tableBody.appendChild(row);
-    });
-}
 
 function displayEthicsProtocols(protocols) {
     const tableBody = document.querySelector('#ethics-protocols-table tbody');
@@ -2029,34 +2103,10 @@ function populateReviewersAndPaySummary() {
                     paySummaryTable.appendChild(tr);
                 });
 
-                // Send the pay summary data to Flask for Word document generation
-                fetch('https://dlsudercproject.pythonanywhere.com/download-pay-summary', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        reviewerEmail: reviewerEmail,
-                        paySummary: data.map(row => [
-                            row.ResearchTitle,
-                            row.ReviewerName,
-                            row.Category,
-                            row.PaidAmount
-                        ])
-                    })
-                })
-                .then(response => response.blob())
-                .then(blob => {
-                    // Create a temporary link element to trigger the download
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = 'pay_summary.docx';
-                    link.click();
-                })
-                .catch(error => {
-                    console.error('Error generating Word file:', error);
-                });
-
+                // Enable the download button and set the click handler
+                const downloadButton = document.getElementById("download-docx");
+                downloadButton.disabled = false;
+                downloadButton.onclick = () => downloadPaySummary(reviewerEmail);
             } else {
                 console.log("No pay summary found for the selected reviewer.");
             }
@@ -2065,6 +2115,33 @@ function populateReviewersAndPaySummary() {
             console.error("Error fetching pay summary:", error);
             alert("There was an error fetching the pay summary. Please try again.");
         });
+    });
+}
+
+function downloadPaySummary(reviewerEmail) {
+    fetch('https://dlsudercproject.pythonanywhere.com/download-pay-summary', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ reviewerEmail })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Error generating Word file.");
+        }
+        return response.blob();
+    })
+    .then(blob => {
+        // Create a temporary link element to trigger the download
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'pay_summary.docx';
+        link.click();
+    })
+    .catch(error => {
+        console.error('Error generating Word file:', error);
+        alert("There was an error generating the Word file. Please try again.");
     });
 }
 
@@ -2150,5 +2227,4 @@ function deleteProtocol() {
 function toPaySummary() {
     window.location.href = 'paysummary.html';
 }
-
 
