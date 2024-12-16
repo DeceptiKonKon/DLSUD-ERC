@@ -1,0 +1,2368 @@
+/* General reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;  /* Light mode background */
+    color: black; /* Light mode text color */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+    margin-top: 100px;
+    overflow: scroll;
+}
+
+/* Header styling */
+header {
+    background-color: rgb(20, 114, 20);
+    color: white;
+    padding: 10px 10%;  /* Retain relative width padding */
+    position: fixed;  /* Fix the header to the top of the page */
+    top: 0;
+    left: 0;
+    width: 100%;  /* Ensure the header spans the full width of the viewport */
+    z-index: 1000;  /* Ensure it stays above other content */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+    border-bottom: 5px solid black; /* Black border at the bottom */
+}
+
+/* Container for header content */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;  /* Ensure container spans the full width */
+    box-sizing: border-box; /* Ensure padding is considered in the width calculation */
+}
+
+.logo img {
+    height: 50px;
+    width: auto;
+}
+
+/* Apply styles only to the logo image */
+.logo img {
+    border-radius: 50px;  /* Circular border with 50px radius */
+    border: 2px solid black; /* Black outline */
+}
+
+/* Navbar styling */
+.navbar ul {
+    list-style-type: none;
+    display: flex;
+    gap: 20px;
+    align-items: center; /* Align items vertically in the navbar */
+}
+
+/* Navbar link styling */
+.navbar a {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+}
+
+/* Main section styling (Original) */
+.main-section {
+    margin-top: 5px;
+    text-align: center;
+    padding: 30px 20px;
+}
+
+.main-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+}
+
+/* Button container */
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.button {
+    display: inline-block;
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    color: black;
+    background-color: white;
+    border: 2px solid black;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.button:hover {
+    background-color: green;
+    color: white;
+    border: 2px solid green;
+    outline: none;
+}
+
+/* Dark Mode Styles */
+.dark-mode {
+    background-color: #1e1e1e; /* Dark background */
+    color: white; /* Light text for dark mode */
+}
+
+.dark-mode header {
+    background-color: #333; /* Dark header background */
+}
+
+.dark-mode .navbar a {
+    color: white; /* White links in dark mode */
+}
+
+.dark-mode .button {
+    color: white;
+    background-color: #444; /* Darker button background */
+    border: 2px solid #888; /* Lighter border */
+}
+
+.dark-mode .button:hover {
+    background-color: #555; /* Slightly lighter on hover */
+    color: white;
+    border: 2px solid #bbb; /* Lighter border on hover */
+}
+
+.dark-mode .main-section h1 {
+    color: white; /* White text for main section header */
+}
+
+/* Dark Mode Specific Dropdown Menu Styling */
+.dark-mode .dropdown-content {
+    background-color: #333; /* Dark background for dropdown in dark mode */
+    color: white; /* White text in the dropdown */
+}
+
+.dark-mode .dropdown-content a {
+    color: white; /* White links in dark mode */
+}
+
+.dark-mode .dropdown-content a:hover {
+    background-color: #555; /* Darker background for hover */
+}
+
+/* Dropdown Menu Styling */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    background-color: transparent; /* Transparent button */
+    color: white; /* White text for the button */
+    padding: 10px 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.dropbtn:hover {
+    background-color: #065906; /* Slight hover effect */
+    border-color: white;
+}
+
+/* Dropdown content - base styling */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    right: 0; /* Align dropdown to the right */
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Hover effect for links inside the dropdown */
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+/* Display the dropdown when hovered */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Dark Mode Toggle Button Styling */
+.dark-mode-btn {
+    background-color: transparent; /* Transparent button */
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.dark-mode-btn img {
+    width: 25px; /* Icon size */
+    height: 25px;
+}
+
+/* Button hover effect */
+.dark-mode-btn:hover {
+    opacity: 0.8;
+}
+
+/* Login Form Container */
+.login-container {
+    width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    
+}
+
+/* Label Styling: Align to left */
+.login-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #000000;
+    text-align: left; /* Align label to the left of the input */
+}
+
+/* Input fields */
+.login-container input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    
+}
+
+/* Dark Mode Styles for Login Form */
+.dark-mode .login-container {
+    background-color: #333;  /* Dark background for form */
+    color: white;  /* White text */
+    border: 1px solid #444; /* Darker border */
+}
+
+.dark-mode .login-container label {
+    color: white;  /* White text for labels in dark mode */
+}
+
+.dark-mode .login-container input {
+    background-color: #444; /* Dark input background */
+    color: white;  /* White text in input fields */
+    border: 1px solid #666;  /* Darker border for inputs */
+}
+
+/* Layout for the Login Button and Sign Up Text */
+.login-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Sign Up Link */
+.signup-link,
+.forgot-password-link {
+    font-size: 14px;
+    color: #0c7e0c;  /* Same color for both links */
+    text-decoration: none;
+}
+
+.signup-link:hover,
+.forgot-password-link:hover {
+    text-decoration: underline;  /* Underline effect on hover for both links */
+}
+
+/* Button container (updated for right alignment) */
+
+
+/* Login Button */
+.login-btn {
+    padding: 10px 20px;
+    background-color: #0c7e0c;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 20px;
+    margin-left: 380px;
+}
+
+.login-btn:hover {
+    background-color: #065906;
+}
+
+/* Dark Mode Styles for Login Button */
+.dark-mode .login-btn {
+    background-color: #0c7e0c;  /* Darker button */
+    color: white;
+}
+
+.dark-mode .login-btn:hover {
+    background-color: #065906;  /* Darker on hover */
+}
+/* Specific Styling for Confirmation Page */
+.confirmation-container {
+    width: 400px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.confirmation-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #333;
+    text-align: left; /* Align label to the left of the input */
+}
+
+.confirmation-container input[type="text"] {
+    width: calc(100% - 100px); /* Account for button width */
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.confirmation-container .submit-btn {
+    padding: 10px 20px;
+    background-color: green;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block;
+    margin-left: 10px; /* Spacing between input and button */
+}
+
+.confirmation-container .submit-btn:hover {
+    background-color: #333;
+    color: white;
+}
+
+/* Resend Code Text */
+.confirmation-container .resend-text {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;
+    text-align: center;
+}
+
+.confirmation-container .resend-text a {
+    color: green;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.confirmation-container .resend-text a:hover {
+    text-decoration: underline;
+}
+
+/* Dark Mode Adjustments for Confirmation Page */
+.dark-mode .confirmation-container {
+    background-color: #333;
+    color: white;
+    border: 1px solid #444;
+}
+
+.dark-mode .confirmation-container input[type="text"] {
+    background-color: #444;
+    color: white;
+    border: 1px solid #666;
+}
+
+.dark-mode .confirmation-container .submit-btn {
+    background-color: #555;
+}
+
+.dark-mode .confirmation-container .submit-btn:hover {
+    background-color: #444;
+}
+
+.dark-mode .confirmation-container .resend-text a {
+    color: #aaa;
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        width: 100%;
+    }
+    .login-btn{
+        margin-left: auto;
+    }
+}
+
+/* Specific Styling for Sign Up Button */
+.signup-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px; /* Adjust button size */
+    background-color: green; /* Primary button color */
+    color: white; /* Text color */
+    font-size: 16px; /* Font size for better readability */
+    border: none; /* Remove borders */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition effect */
+}
+
+/* Hover Effect for Sign Up Button */
+.signup-btn:hover {
+    background-color: #333; /* Darker shade on hover */
+    color: white;
+}
+
+
+/* Style for the label */
+
+
+/* Styling for Account Type Dropdown */
+select#account-type {
+    width: 100%; /* Full width */
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: white; /* Light background */
+    color: #333; /* Text color */
+    margin-bottom: 15px; /* Space below the dropdown */
+    transition: border-color 0.3s ease; /* Smooth border transition */
+}
+
+/* Dark Mode Styling for Dropdown */
+.dark-mode select#account-type {
+    background-color: #444; /* Darker background */
+    color: white; /* White text */
+    border: 1px solid #666; /* Darker border */
+}
+
+/* Focused Dropdown Styling */
+select#account-type:focus {
+    border-color: green; /* Green border when focused */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Dark Mode Focused Dropdown Styling */
+.dark-mode select#account-type:focus {
+    border-color: #bbb; /* Lighter green border in dark mode */
+}
+
+#resend-code-link {
+    font-size: 14px;
+    color: #000000;
+}
+
+#resend-code-link a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+#resend-code-link a:hover {
+    text-decoration: underline;
+}
+
+/* Error Message Styling */
+.error-message {
+    color: red;
+    font-weight: bold;
+    padding: 10px;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+/* Success Message Styling */
+.success-message {
+    color: green;
+    font-weight: bold;
+    padding: 10px;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+/* Hide sections by default */
+.hidden {
+    display: none;
+}
+
+.resend-btn{
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px; /* Adjust button size */
+    background-color: green; /* Primary button color */
+    color: white; /* Text color */
+    font-size: 16px; /* Font size for better readability */
+    border: none; /* Remove borders */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition effect */
+}
+
+/* Hover Effect for Sign Up Button */
+.resend-btn:hover {
+    background-color: #333; /* Darker shade on hover */
+    color: white;
+}
+
+/* General form styling */
+#protocol-form {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+#protocol-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+#protocol-form select, #protocol-form input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#protocol-form button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#protocol-form button:hover {
+    background-color: #333;
+}
+
+/* General Section Styles */
+.dashboard-section {
+    background-color: white; /* White rectangle background */
+    padding: 20px; /* Add padding inside the rectangle */
+    margin: 20px auto; /* Center the section and add space between sections */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    width: 80%; /* Adjust width to keep sections contained */
+    text-align: left; /* Align text to the left */
+}
+
+/* Section Titles */
+.dashboard-section h2 {
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+    color: #333; /* Neutral color for titles */
+}
+
+/* Table Styling */
+#protocols-table {
+    width: 100%;
+    border-collapse: collapse; /* Remove space between table borders */
+    margin-top: 15px;
+}
+
+#protocols-table th, #protocols-table td {
+    border: 1px solid #ddd; /* Subtle border */
+    padding: 10px;
+    text-align: left; /* Align table text to the left */
+}
+
+#protocols-table th {
+    background-color: #0c7e0c; /* Light gray background for headers */
+    font-weight: bold;
+}
+
+#protocols-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternate row colors for readability */
+}
+
+/* Centered button container */
+.create-protocol-btn-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.create-protocol-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: green;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.create-protocol-btn:hover {
+    background-color: #444; /* Slightly darker hover effect */
+}
+
+/* Dark Mode for Dashboard Sections */
+.dark-mode .dashboard-section {
+    background-color: #333; /* Dark background for sections */
+    color: white; /* Light text for dark mode */
+    border: 1px solid #444; /* Subtle border for sections in dark mode */
+}
+
+/* Dark Mode Table Styling */
+.dark-mode #protocols-table th {
+    background-color: #444; /* Darker header background */
+    color: white; /* White text in headers */
+}
+
+.dark-mode #protocols-table tbody tr:nth-child(even) {
+    background-color: #3a3a3a; /* Slightly lighter row background */
+}
+
+.dark-mode #protocols-table tbody tr:nth-child(odd) {
+    background-color: #333; /* Match section background */
+}
+
+/* Dark Mode Buttons */
+
+
+.dark-mode .create-protocol-btn:hover {
+    background-color: #444; /* Slightly lighter hover */
+}
+
+/* Dark Mode Section Titles */
+.dark-mode .dashboard-section h2 {
+    color: #ddd; /* Slightly lighter title color */
+}
+
+
+/* Forgot Button */
+.Forgot-btn {
+    display: inline-block;
+    margin-bottom: 5px;
+    padding: 12px 25px; /* Adjust button size */
+    background-color: green; /* Primary button color */
+    color: white; /* Text color */
+    font-size: 16px; /* Font size for better readability */
+    border: none; /* Remove borders */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition effect */
+
+}
+
+.Forgot-btn:hover {
+    background-color: #333;
+}
+
+/* Main container for the account settings section */
+#account-settings-section {
+    padding: 20px;
+
+}
+
+#account-settings-section .container {
+    max-width: 800px;
+    margin: auto;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    padding: 20px;
+}
+
+/* Page title styling */
+#account-settings-section .page-title {
+    font-size: 2rem;
+    text-align: center;
+    color: #0c7e0c; /* Highlight color */
+    margin-bottom: 20px;
+}
+
+/* User details section styling */
+#account-settings-section #user-details {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 30px;
+    background-color: #f5f5f5;
+}
+
+#account-settings-section #user-details h2 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #0c7e0c;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+
+#account-settings-section #user-details p {
+    margin: 10px 0;
+    font-size: 1rem;
+    color: #555;
+}
+
+#account-settings-section #user-details span {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Change password section styling */
+#account-settings-section #change-password-section {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #f5f5f5;
+}
+
+#account-settings-section #change-password-section h2 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #0c7e0c;
+    padding-bottom: 5px;
+}
+
+#account-settings-section #change-password-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Form input styling */
+#account-settings-section #change-password-section .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+#account-settings-section #change-password-section .form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+#account-settings-section #change-password-section .form-group input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+/* Error text styling */
+#account-settings-section #change-password-section .form-group small.error-text {
+    color: #ff4d4f;
+    font-size: 0.875rem;
+    display: none; /* Initially hidden */
+}
+
+/* Submit button styling */
+#account-settings-section #change-password-section .submit-btn {
+
+    margin-bottom: 15px;
+    padding: 12px 25px; /* Adjust button size */
+    background-color: #0c7e0c; /* Primary button color */
+    color: white; /* Text color */
+    font-size: 16px; /* Font size for better readability */
+    border: none; /* Remove borders */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#account-settings-section #change-password-section .submit-btn:hover {
+    background-color: #0c7e0c; /* Darker shade on hover */
+}
+/* Main container for the account settings section */
+#account-settings-section {
+    padding: 20px;
+}
+
+/* Dark mode styles */
+.dark-mode #account-settings-section {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+.dark-mode #account-settings-section .container {
+    max-width: 800px;
+    margin: auto;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Darker shadow for depth */
+    padding: 20px;
+}
+
+/* Page title styling */
+.dark-mode #account-settings-section .page-title {
+    font-size: 2rem;
+    text-align: center;
+    color: #ddd; /* Lighter green for dark mode */
+    margin-bottom: 20px;
+}
+
+/* User details section styling */
+.dark-mode #account-settings-section #user-details {
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 30px;
+    background-color: #333;
+}
+
+.dark-mode #account-settings-section #user-details h2 {
+    margin-top: 0;
+    color: #e0e0e0;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #0c7e0c;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+
+.dark-mode #account-settings-section #user-details p {
+    margin: 10px 0;
+    font-size: 1rem;
+    color: #bbb;
+}
+
+.dark-mode #account-settings-section #user-details span {
+    font-weight: bold;
+    color: #e0e0e0;
+}
+
+/* Change password section styling */
+.dark-mode #account-settings-section #change-password-section {
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #333;
+}
+
+.dark-mode #account-settings-section #change-password-section h2 {
+    margin-top: 0;
+    color: #e0e0e0;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #0c7e0c;
+    padding-bottom: 5px;
+}
+
+.dark-mode #account-settings-section #change-password-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Form input styling */
+.dark-mode #account-settings-section #change-password-section .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.dark-mode #account-settings-section #change-password-section .form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    color: #bbb; /* Lighter label color */
+}
+
+.dark-mode #account-settings-section #change-password-section .form-group input {
+    padding: 10px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    font-size: 1rem;
+    background-color: #444;
+    color: #e0e0e0;
+}
+
+.dark-mode #account-settings-section #change-password-section .form-group input:focus {
+    border-color: #0c7e0c;
+    outline: none;
+}
+
+/* Error text styling */
+.dark-mode #account-settings-section #change-password-section .form-group small.error-text {
+    color: #ff4d4f;
+    font-size: 0.875rem;
+    display: none; /* Initially hidden */
+}
+
+
+/* General Section Styling */
+.dashboard-section,
+.section {
+    padding: 20px;
+    background-color: #f9f9f9; /* Light background for the section */
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Section Headings */
+.dashboard-section h2,
+.section h2 {
+    font-size: 1.8rem;
+    color: #0c7e0c; /* Highlight color */
+    border-bottom: 2px solid #0c7e0c;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* Table Styling */
+.dashboard-section table,
+.section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background-color: #ffffff;
+}
+
+.dashboard-section table th,
+.section table th {
+    text-align: left;
+    padding: 10px;
+    background-color: #0c7e0c;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.dashboard-section table td,
+.section table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+.dark-mode .dashboard-section table td,
+.section table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    color: #ddd;
+}
+
+.dashboard-section table tr:nth-child(even),
+.section table tr:nth-child(even) {
+    background-color: #f5f5f5; /* Alternating row color */
+}
+
+.dark-mode .dashboard-section table tr:nth-child(even),
+.section table tr:nth-child(even) {
+    background-color: hsla(0, 0%, 0%, 0.055); /* Alternating row color */
+}
+
+
+.dashboard-section table,
+.section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background-color: #ffffff;
+}
+
+.dark-mode .dashboard-section table,
+.section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background-color: hsla(0, 0%, 100%, 0);
+}
+/* Create Protocol Button Container */
+.create-protocol-btn-container {
+    text-align: right;
+    margin-top: 15px;
+}
+
+/* Create Protocol Button Styling */
+.create-protocol-btn {
+    padding: 12px 25px; /* Adjust button size */
+    background-color: #0c7e0c; /* Primary button color */
+    color: white; /* Text color */
+    font-size: 16px; /* Font size for better readability */
+    border: none; /* Remove borders */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.create-protocol-btn:hover {
+    background-color: #065906; /* Darker shade on hover */
+}
+
+
+
+
+/* Styles for the View Protocol Page */
+#viewprotocol {
+    /* Main Section Styling */
+    padding: 20px;
+    background-color: #f9f9f9; /* Light background for the main section */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    max-width: 900px;
+    margin: auto;
+}
+
+#viewprotocol h1 {
+    text-align: center;
+    color: #0c7e0c; /* Highlight color */
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+/* Subsections */
+#viewprotocol .section {
+    margin-bottom: 30px;
+    background-color: #ffffff; /* White background for subsections */
+    padding: 15px;
+    border: 1px solid #ddd; /* Border for separation */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+}
+
+/* Subsection Headings */
+#viewprotocol .section h2,
+#viewprotocol h2 {
+    color: #333;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #0c7e0c;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* Protocol Information Styling */
+#viewprotocol .section p {
+    font-size: 1rem;
+    margin: 10px 0;
+    color: #555;
+}
+
+#viewprotocol .section p strong {
+    color: #0c7e0c; /* Highlighted labels */
+}
+
+#viewprotocol .section span {
+    color: #333; /* Text color for data */
+}
+
+/* Table Styling */
+#viewprotocol table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background-color: #ffffff;
+}
+
+/* Dashboard-like Table Styling for View Protocol */
+#viewprotocol table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden; /* Ensures border radius applies to table edges */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+#viewprotocol table th,
+#viewprotocol table td {
+    padding: 12px 15px; /* Spacing for table cells */
+    text-align: left; /* Left-align content */
+    border-bottom: 1px solid #ddd; /* Row separation */
+    font-size: 1rem;
+    color: #333; /* Text color */
+}
+
+#viewprotocol table th {
+    background-color: #0c7e0c; /* Header background */
+    color: #ffffff; /* Header text color */
+    font-weight: bold;
+    text-transform: uppercase; /* Capitalized headers */
+    min-width: 150px;
+    max-width: 150px;
+}
+
+#viewprotocol table tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternating row colors */
+}
+
+#viewprotocol table tr:hover {
+    background-color: #f1f1f1; /* Row highlight on hover */
+    transition: background-color 0.3s ease; /* Smooth hover transition */
+}
+
+/* No border for the last row */
+#viewprotocol table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Responsive Table Design */
+@media (max-width: 768px) {
+    #viewprotocol table th,
+    #viewprotocol table td {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+}
+
+/* Submit Button Styling */
+#viewprotocol button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px; /* Button size */
+    background-color: #0c7e0c; /* Primary button color */
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#viewprotocol button:hover {
+    background-color: #065906; /* Darker shade on hover */
+}
+
+/* File Download Section */
+#viewprotocol #download-files-table {
+    margin-top: 20px;
+}
+
+#viewprotocol #download-files-table th,
+#viewprotocol #download-files-table td {
+    text-align: left;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #viewprotocol {
+        padding: 15px;
+    }
+
+    #viewprotocol h1,
+    #viewprotocol h2 {
+        font-size: 1.5rem;
+    }
+
+    #viewprotocol table th,
+    #viewprotocol table td {
+        font-size: 0.9rem;
+    }
+
+    #viewprotocol button {
+        font-size: 0.9rem;
+    }
+}
+
+
+/* Main container for the viewprotocol section */
+#viewprotocol {
+    padding: 20px;
+    background-color: #f9f9f9; /* Light background for the main section */
+}
+
+#viewprotocol .main-section {
+    max-width: 900px;
+    margin: auto;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    padding: 20px;
+}
+
+/* Page title styling */
+#viewprotocol .main-section h1 {
+    font-size: 2rem;
+    text-align: center;
+    color: #0c7e0c; /* Highlight color */
+    margin-bottom: 20px;
+}
+
+/* Section styling */
+#viewprotocol .section {
+    margin-bottom: 30px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f5f5f5;
+}
+
+#viewprotocol .section h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-top: 0;
+    border-bottom: 2px solid #0c7e0c;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* Protocol information details */
+#viewprotocol .section p {
+    font-size: 1rem;
+    margin: 10px 0;
+    color: #555;
+}
+
+#viewprotocol .section p strong {
+    color: #333;
+}
+
+/* Table styling (like protocols-table) */
+#viewprotocol table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+#viewprotocol table thead {
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+#viewprotocol table thead th {
+    padding: 10px;
+    text-align: left;
+    font-size: 1rem;
+}
+
+#viewprotocol table tbody tr {
+    border-bottom: 1px solid #ddd;
+}
+
+#viewprotocol table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#viewprotocol table tbody td {
+    padding: 10px;
+    font-size: 1rem;
+    color: #333;
+}
+
+/* Submit Files button styling */
+#viewprotocol button {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 12px 25px;
+    background-color: #0c7e0c;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    
+}
+
+#viewprotocol button:hover {
+    background-color: #095b09;
+}
+
+/* General styles for sections */
+#comments-section, #email-section {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+#comments-section h2, #email-section h2 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* Form styles */
+#comments-form, #email-form {
+    display: flex;
+    flex-direction: column;
+    padding-left: 40px;
+    padding-right: 40px;
+    text-align: left;
+}
+
+#comments-form .form-group, #email-form .form-group {
+    margin-bottom: 15px;
+}
+
+#comments-form label, #email-form label {
+    font-size: 1em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: left;
+    width: 100%;
+}
+
+#comments-form input, #email-form input,
+#comments-form textarea, #email-form textarea {
+    font-size: 1em;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+}
+
+#comments-form textarea, #email-form textarea {
+    resize: vertical;
+}
+
+#comments-form button, #email-form button {
+    background-color: #0c7e0c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.1em;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    align-self: center;
+}
+
+#comments-form button:hover, #email-form button:hover {
+    background-color: #065906;
+}
+.view-btn{
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px; /* Adjust button size */
+    background-color: green; /* Primary button color */
+    color: white; /* Text color */
+    font-size: 16px; /* Font size for better readability */
+    border: none; /* Remove borders */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition effect */
+}
+
+/* General form styling */
+#assign-form {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+#assign-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+#assign-form select, #assign-form input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#assign-form button:hover {
+    background-color: #333;
+}
+
+/* Dark Mode */
+.dark-mode #assign-form {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #44444400;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0);
+    font-family: Arial, sans-serif;
+}
+
+.dark-mode #assign-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: white;
+}
+
+.dark-mode #assign-form select, #assign-form input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.dark-mode #assign-form button:hover {
+    background-color: #333;
+}
+
+
+/* General form styling for #fassigning-form */
+#fassigning-form {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+#fassigning-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+#fassigning-form select, #fassigning-form input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#fassigning-form button:hover {
+    background-color: #333;
+}
+
+/* Dark Mode for #fassigning-form */
+.dark-mode #fassigning-form {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #44444400;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0);
+    font-family: Arial, sans-serif;
+}
+
+.dark-mode #fassigning-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: white;
+}
+
+.dark-mode #fassigning-form select, .dark-mode #fassigning-form input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.dark-mode #fassigning-form button:hover {
+    background-color: #333;
+}
+
+
+/* Dark Mode Styling for Protocol Form */
+.dark-mode #protocol-form {
+    background-color: #333; /* Darker background for the form */
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Stronger shadow for depth */
+}
+
+.dark-mode #protocol-form label {
+    color: white; /* White text for labels */
+}
+
+/* Dark Mode Styling for Inputs and Select Fields */
+.dark-mode #protocol-form select, 
+.dark-mode #protocol-form input {
+    background-color: #444; /* Darker background for inputs */
+    color: white; /* White text */
+    border: 1px solid #666; /* Subtle border */
+    border-radius: 4px;
+}
+
+/* Focused Input and Select Styling */
+#protocol-form select:focus, 
+#protocol-form input:focus {
+    border-color: green; /* Highlighted green border */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Dark Mode Focused Styling */
+.dark-mode #protocol-form select:focus, 
+.dark-mode #protocol-form input:focus {
+    border-color: #bbb; /* Lighter border in dark mode */
+    box-shadow: 0 0 5px #bbb; /* Subtle glow effect */
+}
+
+/* Placeholder Text Styling */
+.dark-mode #protocol-form input::placeholder, 
+.dark-mode #protocol-form select::placeholder {
+    color: #ccc; /* Light gray placeholder text */
+}
+
+.dark-mode #viewprotocol .section span {
+    color: #ccc; /* Text color for data */
+}
+
+/* Dark Mode Styling for View Protocol */
+.dark-mode #viewprotocol {
+    background-color: #33333300; /* Dark background for main section */
+    color: white; /* White text for general content */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0); /* Subtle shadow for depth */
+    padding: 20px;
+}
+
+.dark-mode #viewprotocol h1 {
+    color: white; /* Lighter text for titles */
+}
+
+.dark-mode #viewprotocol .section {
+    background-color: #333; /* Darker background for subsections */
+    border: 1px solid #555; /* Subtle border for sections */
+}
+
+.dark-mode #viewprotocol .section h2 {
+    color: #ffffff; /* Lighter section headings */
+    border-bottom-color: #888; /* Adjust border color */
+}
+
+.dark-mode #viewprotocol .section p {
+    color: #ddd; /* Light text for paragraphs */
+}
+
+.dark-mode #viewprotocol .section p strong {
+    color: #fff; /* Highlighted strong text */
+}
+
+/* Table Styling in Dark Mode */
+.dark-mode #viewprotocol table {
+    background-color: #444; /* Darker background for table */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+}
+
+.dark-mode #viewprotocol table th {
+    background-color: #555; /* Header background for dark mode */
+    color: #fff; /* White text for table headers */
+}
+
+.dark-mode #viewprotocol table td {
+    color: #ddd; /* Light text for table cells */
+    border-bottom: 1px solid #666; /* Row separation */
+}
+
+.dark-mode #viewprotocol table tr:nth-child(even) {
+    background-color: #3a3a3a; /* Alternating row colors */
+}
+
+.dark-mode #viewprotocol table tr:hover {
+    background-color: #555; /* Highlight row on hover */
+    transition: background-color 0.3s ease;
+}
+
+/* Comment and Email Sections in Dark Mode */
+.dark-mode #comments-section, 
+.dark-mode #email-section {
+    background-color: #444; /* Darker background for sections */
+    color: white; /* White text */
+    border: 1px solid #555; /* Subtle border */
+}
+
+.dark-mode #comments-section h2, 
+.dark-mode #email-section h2 {
+    color: white; /* Lighter headings */
+}
+
+/* Form Inputs in Dark Mode */
+.dark-mode #comments-form input, 
+.dark-mode #email-form input,
+.dark-mode #comments-form textarea, 
+.dark-mode #email-form textarea {
+    background-color: #555; /* Darker input background */
+    color: white; /* White text */
+    border: 1px solid #666; /* Subtle border */
+}
+
+.dark-mode #comments-form input::placeholder, 
+.dark-mode #email-form input::placeholder,
+.dark-mode #comments-form textarea::placeholder, 
+.dark-mode #email-form textarea::placeholder {
+    color: #ccc; /* Placeholder text in lighter gray */
+}
+.dark-mode #viewprotocol .main-section {
+    max-width: 900px;
+    margin: auto;
+    background-color: #33333300;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0); /* Subtle shadow for depth */
+    padding: 20px;
+}
+
+/* General styles for sections */
+#forum-section {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f9f9f9; /* Light background for light mode */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+#forum-section h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+#forum-section h2 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* Forum Comments Table */
+#forumTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#forumTable th, #forumTable td {
+    padding: 12px;
+    text-align: left;
+}
+
+#forumTable th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#forumTable td {
+    background-color: #f9f9f9;
+    border-top: 1px solid #ddd;
+}
+
+#forumTable tr:nth-child(even) td {
+    background-color: #f1f1f1;
+}
+
+/* Input fields and buttons for Forum Section */
+#forum-form {
+    display: flex;
+    flex-direction: column;
+    padding-left: 40px;
+    padding-right: 40px;
+    text-align: left;
+}
+
+#forum-form .form-group {
+    margin-bottom: 15px;
+}
+
+#forum-form label {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: left;
+    width: 100%;
+}
+
+#forum-form textarea {
+    font-size: 1em;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    resize: vertical;
+}
+
+#forum-form button {
+    background-color: #0c7e0c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.1em;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    align-self: center;
+    margin-bottom: 30px;
+}
+
+#forum-form button:hover {
+    background-color: #065906;
+}
+
+/* Dark Mode Styles */
+.dark-mode #forum-section {
+    background-color: #444; /* Darker background for sections */
+    color: white; /* White text */
+    border: 1px solid #555; /* Subtle border */
+}
+
+.dark-mode #forum-section h1,
+.dark-mode #forum-section h2 {
+    color: #ccc; /* Lighter headings */
+}
+
+.dark-mode #forum-form label,
+.dark-mode #forum-form button {
+    color: white; /* White text for labels and buttons */
+}
+
+.dark-mode #forum-form input,
+.dark-mode #forum-form textarea {
+    background-color: #555; /* Darker input background */
+    color: white; /* White text */
+    border: 1px solid #666; /* Subtle border */
+}
+
+.dark-mode #forum-form textarea::placeholder {
+    color: #ccc; /* Placeholder text in lighter gray */
+}
+
+.dark-mode #forumTable th {
+    background-color: #2e8b57; /* Darker green header for dark mode */
+}
+
+.dark-mode #forumTable td {
+    background-color: #555; /* Darker background for forum messages */
+    color: #ccc; /* Light text in the table */
+}
+
+.dark-mode #forumTable tr:nth-child(even) td {
+    background-color: #666; /* Alternating row colors */
+}
+
+/* Attachment Files Section Styling */
+#attachment-files-section {
+    padding: 20px;
+    background-color: #f9f9f9; /* Light background for consistency */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    max-width: 600px;
+    margin: 20px auto; /* Center the section */
+}
+
+/* Section Heading */
+#attachment-files-section h2 {
+    font-size: 1.8rem;
+    color: #0c7e0c; /* Highlight color */
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #0c7e0c;
+    padding-bottom: 10px;
+}
+
+/* Table Styling */
+#pre-files-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background-color: #ffffff;
+}
+
+#pre-files-table thead {
+    background-color: #f4f4f4; /* Light gray for headers */
+    color: #333;
+}
+
+#pre-files-table thead th {
+    padding: 10px;
+    text-align: left;
+    font-size: 1rem;
+    border-bottom: 2px solid #ddd; /* Highlight row separation */
+}
+
+#pre-files-table tbody tr {
+    border-bottom: 1px solid #ddd;
+}
+
+#pre-files-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternate row background */
+}
+
+#pre-files-table tbody td {
+    padding: 10px;
+    font-size: 1rem;
+    color: #333;
+}
+
+/* Button Styling */
+#attachment-files-section button {
+    display: inline-block;
+    margin: 10px 5px;
+    padding: 12px 25px;
+    background-color: #0c7e0c; /* Green primary color */
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#attachment-files-section button:hover {
+    background-color: #095b09; /* Darker green for hover */
+}
+
+#attachment-files-section button:nth-child(1) {
+    background-color: #dc3545; /* Red for 'Delete Ticket' */
+}
+
+#attachment-files-section button:nth-child(1):hover {
+    background-color: #b52a3a; /* Darker red for hover */
+}
+
+.table-container {
+    width: 100%;  /* Or set a specific width like 80% or 600px */
+    overflow-x: auto;  /* Enable horizontal scrolling */
+    -webkit-overflow-scrolling: touch; /* For smooth scrolling on mobile */
+    border: 1px solid #ccc; /* Optional: for better visual distinction */
+}
+
+.username-display {
+    font-size: 16px;
+    font-weight: bold;
+    padding-right: 20px;
+    list-style: none;
+}
+
+/* Specific Styling for ERC Secretary Section */
+#erc-secretary-section {
+    padding: 20px;
+    background-color: #f9f9f9; /* Light grey background for the section */
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Section Heading */
+#erc-secretary-section h2 {
+    font-size: 1.8rem;
+    color: #0c7e0c; /* Highlight color */
+    border-bottom: 2px solid #0c7e0c;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Label Styling */
+#erc-secretary-section label {
+    font-size: 1rem;
+    color: #000000;
+}
+
+/* Search Bar Styling */
+#erc-secretary-section .search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#erc-secretary-section .search-bar input {
+    width: 250px;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#erc-secretary-section .search-bar button {
+    padding: 12px 20px;
+    background-color: #0c7e0c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+#erc-secretary-section .search-bar button:hover {
+    background-color: #065906; /* Darker green on hover */
+}
+
+/* Sort Type Options Styling */
+#erc-secretary-section .sort-options {
+    margin-bottom: 20px;
+}
+
+#erc-secretary-section #sort-type {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+#erc-secretary-section #sort-type label {
+    font-size: 1rem;
+    color: #000000;
+}
+
+#erc-secretary-section #sort-type input {
+    margin-right: 8px;
+}
+
+/* Selection Dropdown Styling */
+#erc-secretary-section #selection-button {
+    padding: 10px 18px;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+
+/* Button Styling */
+#erc-secretary-section button {
+    padding: 12px 25px;
+    background-color: #0c7e0c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#erc-secretary-section button:hover {
+    background-color: #065906; /* Darker green on hover */
+}
+
+/* Table Styling */
+#erc-secretary-section #sec-protocols-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #ffffff;
+}
+
+#erc-secretary-section #sec-protocols-table th,
+#erc-secretary-section #sec-protocols-table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+    color: #333;
+}
+
+#erc-secretary-section #sec-protocols-table th {
+    background-color: #0c7e0c;
+    color: white;
+}
+
+#erc-secretary-section #sec-protocols-table tr:nth-child(even) {
+    background-color: #f5f5f5; /* Alternating row color */
+}
+
+#erc-secretary-section #sec-protocols-table tr:hover {
+    background-color: #f1f1f1; /* Hover effect for rows */
+}
+
+/* Dark Mode Table Styling */
+.dark-mode #erc-secretary-section #sec-protocols-table th,
+.dark-mode #erc-secretary-section #sec-protocols-table td {
+    color: #ddd;
+}
+
+.dark-mode #erc-secretary-section #sec-protocols-table tr:nth-child(even) {
+    background-color: hsla(0, 0%, 0%, 0.05);
+}
+
+.dark-mode #erc-secretary-section #sec-protocols-table tr:hover {
+    background-color: hsla(0, 0%, 0%, 0.1);
+}
+
+/* Styling for the Link/Site Option Section */
+#link-site-option {
+    background-color: #f9f9f9; /* Light background for the section */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    margin-bottom: 20px;
+}
+
+#link-site-option label {
+    font-size: 1.1rem;
+    color: #333;
+    margin-right: 15px;
+}
+
+#link-site-option input[type="radio"] {
+    margin-right: 8px;
+    accent-color: #0c7e0c; /* Green accent color for the radio buttons */
+}
+
+#link-site-option label input[type="radio"] {
+    margin-right: 5px;
+}
+
+#link-site-option input[type="radio"]:checked {
+    background-color: #0c7e0c;
+}
+
+#link-site-option input[type="radio"]:focus {
+    outline: none;
+    box-shadow: 0 0 4px rgba(12, 126, 12, 0.8); /* Highlight the radio button when focused */
+}
+
+#link-site-option .radio-label {
+    font-size: 1rem;
+    color: #555;
+    margin-right: 10px;
+}
+
+/* Add spacing between the radio buttons */
+#link-site-option label {
+    margin-right: 15px;
+}
+
+/* Styling for Yes/No text */
+#link-site-option .yes-no {
+    color: #333;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Optional: Hover effect on the radio button labels */
+#link-site-option label:hover {
+    color: #0c7e0c;
+    cursor: pointer;
+}
+
+/* Specific Styling for ERC Chair Section */
+#erc-chair-section {
+    padding: 20px;
+    background-color: #f9f9f9; /* Light grey background for the section */
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Section Heading */
+#erc-chair-section h2 {
+    font-size: 1.8rem;
+    color: #0c7e0c; /* Highlight color */
+    border-bottom: 2px solid #0c7e0c;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Label Styling */
+#erc-chair-section label {
+    font-size: 1rem;
+    color: #000000;
+}
+
+/* Search Bar Styling */
+#erc-chair-section .search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#erc-chair-section .search-bar input {
+    width: 250px;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#erc-chair-section .search-bar button {
+    padding: 12px 20px;
+    background-color: #0c7e0c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+#erc-chair-section .search-bar button:hover {
+    background-color: #065906; /* Darker green on hover */
+}
+
+/* Sort Type Options Styling */
+#erc-chair-section .sort-options {
+    margin-bottom: 20px;
+}
+
+#erc-chair-section #sort-type {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+#erc-chair-section #sort-type label {
+    font-size: 1rem;
+    color: #000000;
+}
+
+#erc-chair-section #sort-type input {
+    margin-right: 8px;
+}
+
+/* Selection Dropdown Styling */
+#erc-chair-section #selection-button {
+    padding: 10px 18px;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+
+/* Button Styling */
+#erc-chair-section button {
+    padding: 12px 25px;
+    background-color: #0c7e0c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#erc-chair-section button:hover {
+    background-color: #065906; /* Darker green on hover */
+}
+
+/* Table Styling */
+#erc-chair-section #sec-protocols-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #ffffff;
+}
+
+#erc-chair-section #sec-protocols-table th,
+#erc-chair-section #sec-protocols-table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+    color: #333;
+}
+
+#erc-chair-section #sec-protocols-table th {
+    background-color: #0c7e0c;
+    color: white;
+}
+
+#erc-chair-section #sec-protocols-table tr:nth-child(even) {
+    background-color: #f5f5f5; /* Alternating row color */
+}
+
+#erc-chair-section #sec-protocols-table tr:hover {
+    background-color: #f1f1f1; /* Hover effect for rows */
+}
+
+/* Dark Mode Table Styling */
+.dark-mode #erc-chair-section #sec-protocols-table th,
+.dark-mode #erc-chair-section #sec-protocols-table td {
+    color: #ddd;
+}
+
+.dark-mode #erc-chair-section #sec-protocols-table tr:nth-child(even) {
+    background-color: hsla(0, 0%, 0%, 0.05);
+}
+
+.dark-mode #erc-chair-section #sec-protocols-table tr:hover {
+    background-color: hsla(0, 0%, 0%, 0.1);
+}
+/* paysummary.css */
+
+
+/* Reviewer Selection Styling */
+.reviewer-selection {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Label Styling */
+.reviewer-selection label {
+    font-size: 1rem;
+    color: #000000;
+    font-weight: bold;
+}
+
+/* Select Dropdown Styling */
+.reviewer-selection #selection-button {
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 250px;
+    background-color: #ffffff;
+    color: #333;
+}
+
+/* Select Dropdown Disabled State */
+.reviewer-selection #selection-button:disabled {
+    background-color: #f0f0f0;
+    color: #aaa;
+}
+
+/* Button Styling */
+.reviewer-selection #download-docx {
+    padding: 12px 20px;
+    background-color: #0c7e0c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 250px;
+    text-align: center;
+    display: inline-block;
+}
+
+/* Button Disabled State */
+.reviewer-selection #download-docx:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+    color: #aaa;
+}
+
+/* Button Hover Effect */
+.reviewer-selection #download-docx:hover {
+    background-color: #065906;
+}
+
+/* Style specific to this form group */
+.form-group.specific-review-type {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #ffffff; /* Light blue background specific to this form group */
+    border-radius: 8px;
+    border: 1px solid #ebebeb; /* Blue border */
+}
+
+/* Label styling specific to this form group */
+.form-group.specific-review-type label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333; /* Darker blue for the label */
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Select dropdown styling specific to this form group */
+.form-group.specific-review-type select {
+    padding: 12px;
+    width: 100%;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ebebeb; /* Blue border */
+    box-sizing: border-box;
+    background-color: #ffffff;
+    transition: border-color 0.3s ease;
+}
+
+/* Focused state specific to this dropdown */
+.form-group.specific-review-type select:focus {
+    border-color: #dfdfdf; /* Dark blue on focus */
+    outline: none;
+}
+
+/* Optional hover effect specific to this dropdown */
+.form-group.specific-review-type select:hover {
+    border-color: #dadada; /* Bright blue on hover */
+}
+
+/* Option styling specific to this dropdown (optional) */
+.form-group.specific-review-type select option {
+    font-size: 14px;
+    color: #333;
+}
+
+#slider {
+    position: fixed;
+    top: 0;
+    right: -50%; /* Initially hidden off-screen */
+    width: 50%; /* Default width for larger screens */
+    height: 100%;
+    background-color: #f4f4f4;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    transition: right 0.3s ease-in-out, width 0.3s ease-in-out; /* Smooth transition for right and width */
+    z-index: 1000;
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 20px;
+}
+
+.slider-content {
+    padding: 20px;
+}
+
+/* Button Styling */
+#toggle-slider {
+    position: fixed;
+    top: 50%;
+    right: -35px;  /* Move the button even closer to the right edge */
+    transform: translateY(-50%) rotate(-90deg); /* Rotate button counterclockwise */
+    transform-origin: center center; /* Pivot the rotation around the center */
+    background-color: #0c7e0c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    z-index: 1100;
+    padding: 12px 20px; /* Adjust padding to make button compact and tight */
+    border-radius: 5px 5px 0 0px;
+    font-size: 16px;
+    outline: none;
+    white-space: nowrap; /* Prevent text wrapping */
+    height: auto; /* Allow dynamic height */
+    width: auto; /* Allow dynamic width */
+    box-sizing: border-box; /* Ensure padding doesn't push the button away */
+}
+
+/* Button Hover Effect */
+#toggle-slider:hover {
+    background-color: #095b09; /* Darker blue on hover */
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+    #slider {
+        width: 100%; /* Full width on smaller screens */
+        right: -100%; /* Adjust hiding position */
+    }
+
+    /* Adjust button padding for mobile to keep it readable */
+    #toggle-slider {
+        padding: 10px 20px;
+    }
+}
