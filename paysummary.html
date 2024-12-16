@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay Summary</title>
+    <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="header-container">
+            <a href="dashboard.html" class="logo">
+                <img src="img/logo.png" alt="Logo">
+            </a>
+            <h2>DLSU-D Ethics Review Committee</h2>
+            <nav class="navbar">
+                <ul>
+                    <li id="username-container" class="username-display">
+                        <!-- Username will be injected here -->
+                    </li>
+                    <!-- Dark Mode Toggle Button -->
+                    <button class="dark-mode-btn" onclick="toggleDarkMode()">
+                        <img id="dark-mode-icon" src="img/light-icon.png" alt="Dark Mode" />
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <li class="dropdown">
+                        <button class="dropbtn">Menu</button>
+                        <div id="myDropdown" class="dropdown-content">
+                            <a href="dashboard.html">Dashboard</a>
+                            <a href="accountsettings.html">Account Settings</a>
+                            <a href="index.html">Log Out</a>
+                        </div>                        
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+<section>
+        <!-- ERC Secretary Section -->
+        <div id="paysummary-section" class="dashboard-section">
+            <h2>Pay Summary Section</h2>
+
+    <!-- Selection Button -->
+    <div class="reviewer-selection">
+        <label for="selection-button">Select Reviewer:</label>
+        <select id="selection-button">
+            <option value="" disabled selected>-- Select an Option --</option>
+            <!-- Additional options can be dynamically added here -->
+        </select>
+    </div>
+    <div class="reviewer-selection">
+        <button id="download-docx" disabled>Download as Word</button>
+    </div>
+            <table id="paysummary-table">
+                <thead>
+                    <tr>
+                        <th>Research Title</th>
+                        <th>Reviewer</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be dynamically inserted here -->
+                </tbody>
+            </table>    
+        </div>
+    </section>
+    
+    <script src="js/jszip.min.js"></script>
+    <script src="js/docxtemplater.js"></script>
+
+    <!-- Link to External JavaScript File -->
+    <script src="js/script.js"></script>
+
+    
+</body>
+</html>
